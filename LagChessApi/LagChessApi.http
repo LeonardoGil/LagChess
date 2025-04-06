@@ -1,6 +1,3 @@
 @LagChessApi_HostAddress = http://localhost:5121
 
-GET {{LagChessApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
 ###
