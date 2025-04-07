@@ -5,11 +5,13 @@ namespace LagChessApplication.Domains.Pieces
 {
     internal interface IPiece
     {
-        Point Position { get; set; }
+        Point? Position { get; }
+        bool IsDead { get; }
 
-        PieceColorEnum Color { get; set; }
-        PieceTypeEnum Type { get; set; }
+        PieceColorEnum Color { get; }
+        PieceTypeEnum Type { get; }
 
+        void Kill();
         void Move();
         bool CanMove();
     }
