@@ -43,7 +43,7 @@ namespace LagChessApplication.Domains
 
         private bool CanPlacePiece(IPiece piece, Point to)
         {
-            if (!IsOccupied(to))
+            if (IsOccupied(to))
             {
                 var occupiedPiece = Pieces.First(x => x.Position == to);
 

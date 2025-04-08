@@ -5,7 +5,9 @@ VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LagChessApi", "LagChessApi\LagChessApi.csproj", "{FC6BB555-E823-43B5-A1B1-71BFE9757472}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LagChessApplication", "LagChessApplication\LagChessApplication.csproj", "{38FFEF96-861B-4150-8570-408142A4D1F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LagChessApplication", "LagChessApplication\LagChessApplication.csproj", "{38FFEF96-861B-4150-8570-408142A4D1F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LagChessApplication.Tests", "LagChessApplication.Tests\LagChessApplication.Tests.csproj", "{E0AE7A9A-B27E-43DC-8100-D86DA2D20285}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{38FFEF96-861B-4150-8570-408142A4D1F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38FFEF96-861B-4150-8570-408142A4D1F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38FFEF96-861B-4150-8570-408142A4D1F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0AE7A9A-B27E-43DC-8100-D86DA2D20285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0AE7A9A-B27E-43DC-8100-D86DA2D20285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0AE7A9A-B27E-43DC-8100-D86DA2D20285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0AE7A9A-B27E-43DC-8100-D86DA2D20285}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
