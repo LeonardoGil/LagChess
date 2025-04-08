@@ -13,8 +13,12 @@ namespace LagChessApplication.Domains
 
         public IPiece[] Pieces { get => [.. White.Pieces, .. Black.Pieces]; }
 
-        public void MovePiece(IPiece piece, Point to)
+        public IPiece GetPiece(Point from) => Pieces.FirstOrDefault(x => x.Position == from);
+
+        public void MovePiece(Point from, Point to)
         {
+            var piece = GetPiece(from);
+
             if (!piece.IsValidMove(to) || !IsPathClear(piece, to) || !CanPlacePiece(piece, to))
             {
                 throw MoveInvalidException.Create(piece, to);
