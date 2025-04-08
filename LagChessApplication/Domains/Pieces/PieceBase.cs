@@ -10,6 +10,7 @@ namespace LagChessApplication.Domains.Pieces
 
         public PieceColorEnum Color { get; init; }
         public PieceTypeEnum Type { get; init; }
+        public PieceMoveStyleEnum MoveStyle { get; init; }
 
         public void Kill()
         {
@@ -17,6 +18,7 @@ namespace LagChessApplication.Domains.Pieces
             IsDead = true;
         }
 
+        public abstract bool CanMove(Point to);
         public abstract void Move();
     }
 }
