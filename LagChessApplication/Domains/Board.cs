@@ -19,13 +19,51 @@ namespace LagChessApplication.Domains
 
             if (IsPathClear(piece, to))
                 throw new NotImplementedException();
+
+            if (IsOccupied(to))
+            {
+                var attackedPiece = Pieces.First(x => x.Position == to);
+                attackedPiece.Kill();
+            }
+
+            piece.Move(to);
         }
 
         private bool IsPathClear(IPiece piece, Point to)
         {
-            var moveStyle = (piece.Position.Value, to).ConvertToMoveStyleEnum();
+            var from = piece.Position ?? throw new Exception("Piece is dead");
+            var moveStyle = (from, to).ConvertToMoveStyleEnum();
+            
+            var directionX = Math.Sign(to.X - from.X);
+            var directionY = Math.Sign(to.Y - from.Y);
 
-            throw new NotImplementedException();
+            switch (moveStyle)
+            {
+                case PieceMoveStyleEnum.Linear:
+                case PieceMoveStyleEnum.Diagonal:
+                    var current = new Point(from.X + directionX, from.Y + directionY);
+
+                    while (current != to)
+                    {
+                        if (IsOccupied(current))
+                            return false;
+
+                        current = new Point(current.X + directionX, current.Y + directionY);
+                    }
+
+                    return true;
+
+                case PieceMoveStyleEnum.LShaped:
+                    return true;
+
+                default:
+                    throw new NotSupportedException("Unknown movement style");
+            }
+        }
+
+        private bool IsOccupied(Point point)
+        {
+            return Pieces.Any(p => p.Position == point);
         }
     }
 }
