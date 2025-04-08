@@ -3,8 +3,14 @@ using System.Drawing;
 
 namespace LagChessApplication.Domains.Pieces
 {
-    internal class Pawn : PieceBase, IPiece
+    public class Pawn : PieceBase, IPiece
     {
+        public Pawn(Point position, PieceColorEnum color) : base(position, color)
+        {
+            Type = PieceTypeEnum.Pawn;
+            MoveStyle = PieceMoveStyleEnum.Linear;
+        }
+
         public override bool CanMove(Point to)
         {
             var position = Position ?? throw new ArgumentNullException();
@@ -15,11 +21,11 @@ namespace LagChessApplication.Domains.Pieces
             switch (Color)
             {
                 case PieceColorEnum.White:
-                    vertical = vertical && to.Y == to.Y + 1;
+                    vertical = vertical && to.Y == position.Y + 1;
                     break;
 
                 case PieceColorEnum.Black:
-                    vertical = vertical && to.Y == to.Y - 1;
+                    vertical = vertical && to.Y == position.Y - 1;
                     break;
             }
 

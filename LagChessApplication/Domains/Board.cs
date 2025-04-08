@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace LagChessApplication.Domains
 {
-    internal class Board(Player white, Player black)
+    public class Board(Player white, Player black)
     {
         public Player White { get; init; } = white;
         public Player Black { get; init; } = black;
@@ -14,16 +14,27 @@ namespace LagChessApplication.Domains
 
         public void MovePiece(IPiece piece, Point to)
         {
-            if (piece.CanMove(to))
+            if (!piece.CanMove(to))
                 throw MoveInvalidException.Create(piece, to);
 
-            if (IsPathClear(piece, to))
+            if (!IsPathClear(piece, to))
                 throw new NotImplementedException();
 
-            if (IsOccupied(to))
+            SetPiecePosition(piece, to);
+        }
+
+        private void SetPiecePosition(IPiece piece, Point to)
+        {
+            var isOccupied = IsOccupied(to);
+
+            if (isOccupied)
             {
-                var attackedPiece = Pieces.First(x => x.Position == to);
-                attackedPiece.Kill();
+                var occupiedPiece = Pieces.First(x => x.Position == to);
+
+                if (piece.Color == occupiedPiece.Color)
+                    throw new Exception("Is occupied");
+
+                occupiedPiece.Kill();
             }
 
             piece.Move(to);

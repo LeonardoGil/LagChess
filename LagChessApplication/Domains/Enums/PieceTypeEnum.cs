@@ -1,6 +1,6 @@
 ﻿namespace LagChessApplication.Domains.Enums
 {
-    internal enum PieceTypeEnum
+    public enum PieceTypeEnum
     {
         Pawn,
         Rook,

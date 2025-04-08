@@ -1,6 +1,6 @@
 ﻿namespace LagChessApplication.Domains.Enums
 {
-    internal enum PieceColorEnum
+    public enum PieceColorEnum
     {
         White,
         Black

@@ -3,12 +3,12 @@ using System.Drawing;
 
 namespace LagChessApplication.Domains.Pieces
 {
-    internal abstract class PieceBase : IPiece
+    public abstract class PieceBase(Point position, PieceColorEnum color) : IPiece
     {
-        public Point? Position { get; private set; }
+        public Point? Position { get; private set; } = position;
         public bool IsDead { get; private set; }
 
-        public PieceColorEnum Color { get; init; }
+        public PieceColorEnum Color { get; init; } = color;
         public PieceTypeEnum Type { get; init; }
         public PieceMoveStyleEnum MoveStyle { get; init; }
 

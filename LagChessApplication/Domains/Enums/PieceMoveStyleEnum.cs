@@ -2,7 +2,7 @@
 
 namespace LagChessApplication.Domains.Enums
 {
-    internal enum PieceMoveStyleEnum
+    public enum PieceMoveStyleEnum
     {
         Linear,
         Diagonal,
@@ -10,7 +10,7 @@ namespace LagChessApplication.Domains.Enums
         All
     }
 
-    internal static class PieceMoveStyleExtension
+    public static class PieceMoveStyleExtension
     {
         public static PieceMoveStyleEnum ConvertToMoveStyleEnum(this (Point from, Point to) direction)
         {

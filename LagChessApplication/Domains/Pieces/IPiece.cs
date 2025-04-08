@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace LagChessApplication.Domains.Pieces
 {
-    internal interface IPiece
+    public interface IPiece
     {
         Point? Position { get; }
         bool IsDead { get; }

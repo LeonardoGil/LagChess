@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace LagChessApplication.Exceptions
 {
-    internal class MoveInvalidException(IPiece piece, Point to) : Exception
+    public class MoveInvalidException(IPiece piece, Point to) : Exception
     {
         public IPiece Piece { get; init; } = piece;
         public Point To { get; init; } = to;
