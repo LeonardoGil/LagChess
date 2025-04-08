@@ -13,7 +13,7 @@ namespace LagChessApplication.Domains.Pieces
         PieceMoveStyleEnum MoveStyle { get; }
 
         void Kill();
-        void Move();
+        void Move(Point to);
         bool CanMove(Point to);
     }
 }

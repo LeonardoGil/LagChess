@@ -18,7 +18,8 @@ namespace LagChessApplication.Domains.Pieces
             IsDead = true;
         }
 
+        public void Move(Point to) => Position = to;
+
         public abstract bool CanMove(Point to);
-        public abstract void Move();
     }
 }

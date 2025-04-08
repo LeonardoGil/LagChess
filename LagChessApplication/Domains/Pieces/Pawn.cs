@@ -25,10 +25,5 @@ namespace LagChessApplication.Domains.Pieces
 
             return horizontal && vertical;
         }
-
-        public override void Move()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
