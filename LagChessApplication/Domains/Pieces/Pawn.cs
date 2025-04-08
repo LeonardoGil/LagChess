@@ -11,7 +11,7 @@ namespace LagChessApplication.Domains.Pieces
             MoveStyle = PieceMoveStyleEnum.Linear;
         }
 
-        public override bool CanMove(Point to)
+        public override bool IsValidMove(Point to)
         {
             var position = Position ?? throw new ArgumentNullException();
 

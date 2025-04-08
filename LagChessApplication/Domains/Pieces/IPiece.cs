@@ -14,6 +14,6 @@ namespace LagChessApplication.Domains.Pieces
 
         void Kill();
         void Move(Point to);
-        bool CanMove(Point to);
+        bool IsValidMove(Point to);
     }
 }

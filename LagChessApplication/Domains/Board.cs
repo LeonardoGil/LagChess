@@ -14,11 +14,10 @@ namespace LagChessApplication.Domains
 
         public void MovePiece(IPiece piece, Point to)
         {
-            if (!piece.CanMove(to))
+            if (!piece.IsValidMove(to) || !IsPathClear(piece, to))
+            {
                 throw MoveInvalidException.Create(piece, to);
-
-            if (!IsPathClear(piece, to))
-                throw new NotImplementedException();
+            }
 
             SetPiecePosition(piece, to);
         }
@@ -31,8 +30,10 @@ namespace LagChessApplication.Domains
             {
                 var occupiedPiece = Pieces.First(x => x.Position == to);
 
-                if (piece.Color == occupiedPiece.Color)
-                    throw new Exception("Is occupied");
+                if (piece.Color == occupiedPiece.Color || piece is Pawn)
+                {
+                    throw MoveInvalidException.Create(piece, to);
+                }
 
                 occupiedPiece.Kill();
             }

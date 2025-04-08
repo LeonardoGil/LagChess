@@ -20,6 +20,6 @@ namespace LagChessApplication.Domains.Pieces
 
         public void Move(Point to) => Position = to;
 
-        public abstract bool CanMove(Point to);
+        public abstract bool IsValidMove(Point to);
     }
 }
