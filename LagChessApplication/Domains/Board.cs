@@ -1,11 +1,12 @@
 ﻿using LagChessApplication.Domains.Enums;
 using LagChessApplication.Domains.Pieces;
 using LagChessApplication.Exceptions;
+using LagChessApplication.Interfaces;
 using System.Drawing;
 
 namespace LagChessApplication.Domains
 {
-    public class Board(Player white, Player black)
+    public class Board(Player white, Player black) : IDeepCloneable<Board>
     {
         public Player White { get; init; } = white;
         public Player Black { get; init; } = black;
@@ -14,7 +15,7 @@ namespace LagChessApplication.Domains
 
         public void MovePiece(IPiece piece, Point to)
         {
-            if (!piece.IsValidMove(to) || !IsPathClear(piece, to))
+            if (!piece.IsValidMove(to) || !IsPathClear(piece, to) || !CanPlacePiece(piece, to))
             {
                 throw MoveInvalidException.Create(piece, to);
             }
@@ -30,15 +31,22 @@ namespace LagChessApplication.Domains
             {
                 var occupiedPiece = Pieces.First(x => x.Position == to);
 
-                if (piece.Color == occupiedPiece.Color || piece is Pawn)
-                {
-                    throw MoveInvalidException.Create(piece, to);
-                }
-
                 occupiedPiece.Kill();
             }
 
             piece.Move(to);
+        }
+
+        private bool CanPlacePiece(IPiece piece, Point to)
+        {
+            if (!IsOccupied(to))
+            {
+                var occupiedPiece = Pieces.First(x => x.Position == to);
+
+                return piece is not Pawn && piece.Color != occupiedPiece.Color;
+            }
+
+            return true;
         }
 
         private bool IsPathClear(IPiece piece, Point to)
@@ -76,6 +84,11 @@ namespace LagChessApplication.Domains
         private bool IsOccupied(Point point)
         {
             return Pieces.Any(p => p.Position == point);
+        }
+
+        public Board Clone()
+        {
+            return new Board(White.Clone(), Black.Clone());
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using LagChessApplication.Domains.Enums;
+using LagChessApplication.Interfaces;
 using System.Drawing;
 
 namespace LagChessApplication.Domains.Pieces
 {
-    public interface IPiece
+    public interface IPiece : IDeepCloneable<IPiece>
     {
         Point? Position { get; }
         bool IsDead { get; }

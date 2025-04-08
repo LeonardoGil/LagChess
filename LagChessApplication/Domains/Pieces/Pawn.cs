@@ -11,6 +11,14 @@ namespace LagChessApplication.Domains.Pieces
             MoveStyle = PieceMoveStyleEnum.Linear;
         }
 
+        public override IPiece Clone()
+        {
+            return new Pawn(Position ?? new Point(0, 0), Color)
+            {
+                IsDead = IsDead
+            };
+        }
+
         public override bool IsValidMove(Point to)
         {
             var position = Position ?? throw new ArgumentNullException();
