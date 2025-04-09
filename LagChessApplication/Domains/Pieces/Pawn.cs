@@ -39,8 +39,5 @@ namespace LagChessApplication.Domains.Pieces
 
             return horizontal && vertical;
         }
-
-        public static Pawn CreateWhite(Point position) => new(position, PieceColorEnum.White);
-        public static Pawn CreateBlack(Point position) => new(position, PieceColorEnum.Black);
     }
 }

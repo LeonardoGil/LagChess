@@ -23,6 +23,10 @@ namespace LagChessApplication.Domains.Pieces
         public abstract bool IsValidMove(Point to);
 
         public abstract IPiece Clone();
+
+        public static T CreatePiece<T>(Point position, PieceColorEnum color) where T : class => (T)Activator.CreateInstance(typeof(T), position, color);
+        public static T CreatePieceWhite<T>(int x, int y) where T : class => CreatePiece<T>(new Point(x, y), PieceColorEnum.White);
+        public static T CreatePieceBlack<T>(int x, int y) where T : class => CreatePiece<T>(new Point(x, y), PieceColorEnum.Black);
     }
 
     public static class PieceExtension

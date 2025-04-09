@@ -10,12 +10,12 @@ namespace LagChessApplication.Tests.Mocks
         {
             var white = new Player
             {
-                Pieces = [Pawn.CreateWhite(new Point(1, 1))]
+                Pieces = [PieceBase.CreatePieceWhite<Pawn>(1, 1)]
             };
 
             var black = new Player
             {
-                Pieces = [Pawn.CreateBlack(new Point(1, 8))]
+                Pieces = [PieceBase.CreatePieceBlack<Pawn>(1, 8)]
             };
 
             return new Board(white, black);
