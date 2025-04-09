@@ -20,5 +20,20 @@ namespace LagChessApplication.Tests.Mocks
 
             return new Board(white, black);
         }
+
+        public static Board WithOneRookEach()
+        {
+            var white = new Player
+            {
+                Pieces = [PieceBase.CreatePieceWhite<Rook>(1, 1)]
+            };
+
+            var black = new Player
+            {
+                Pieces = [PieceBase.CreatePieceBlack<Rook>(1, 8)]
+            };
+
+            return new Board(white, black);
+        }
     }
 }
