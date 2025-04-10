@@ -8,7 +8,7 @@ namespace LagChessApplication.Domains.Pieces
         public Rook(Point position, PieceColorEnum color) : base(position, color)
         {
             Type = PieceTypeEnum.Rook;
-            MoveStyle = PieceMoveStyleEnum.Linear;
+            MoveStyle = PieceMoveStyleEnum.Straight;
         }
 
         public override IPiece Clone()

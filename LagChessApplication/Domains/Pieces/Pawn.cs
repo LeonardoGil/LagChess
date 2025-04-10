@@ -8,7 +8,7 @@ namespace LagChessApplication.Domains.Pieces
         public Pawn(Point position, PieceColorEnum color) : base(position, color)
         {
             Type = PieceTypeEnum.Pawn;
-            MoveStyle = PieceMoveStyleEnum.Linear;
+            MoveStyle = PieceMoveStyleEnum.OneStraight;
         }
 
         public override IPiece Clone()

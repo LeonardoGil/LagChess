@@ -63,7 +63,7 @@ namespace LagChessApplication.Domains
 
             switch (moveStyle)
             {
-                case PieceMoveStyleEnum.Linear:
+                case PieceMoveStyleEnum.Straight:
                 case PieceMoveStyleEnum.Diagonal:
                     var current = new Point(from.X + directionX, from.Y + directionY);
 

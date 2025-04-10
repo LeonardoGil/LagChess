@@ -37,7 +37,7 @@ namespace LagChessApplication.Domains.Pieces
 
             switch (moveStyle)
             {
-                case PieceMoveStyleEnum.Linear:
+                case PieceMoveStyleEnum.Straight:
                     var linearX = Enumerable.Range(0, 7).Where(x => position.X != x).Select(x => new Point(x, position.Y));
                     var linearY = Enumerable.Range(0, 7).Where(y => position.Y != y).Select(y => new Point(position.X, y));
 
@@ -78,7 +78,7 @@ namespace LagChessApplication.Domains.Pieces
                     return knightMoves.Where(p => p.X is >= 0 and < 8 && p.Y is >= 0 and < 8).ToArray();
 
                 case PieceMoveStyleEnum.All:
-                    var linearMoves = GetPossibleMoves(piece, PieceMoveStyleEnum.Linear);
+                    var linearMoves = GetPossibleMoves(piece, PieceMoveStyleEnum.Straight);
                     var diagonalMoves = GetPossibleMoves(piece, PieceMoveStyleEnum.Diagonal);
 
                     return linearMoves.Union(diagonalMoves).ToArray();

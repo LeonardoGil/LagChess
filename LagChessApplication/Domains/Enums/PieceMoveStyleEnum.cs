@@ -4,10 +4,17 @@ namespace LagChessApplication.Domains.Enums
 {
     public enum PieceMoveStyleEnum
     {
-        Linear,
+        Straight,
+        
+        OneStraight,
+        
         Diagonal,
+        
         LShaped,
-        All
+        
+        All,
+        
+        OneAll
     }
 
     public static class PieceMoveStyleExtension
@@ -15,7 +22,7 @@ namespace LagChessApplication.Domains.Enums
         public static PieceMoveStyleEnum ConvertToMoveStyleEnum(this (Point from, Point to) direction)
         {
             if (IsLinear(direction.from, direction.to))
-                return PieceMoveStyleEnum.Linear;
+                return PieceMoveStyleEnum.Straight;
 
             if (IsDiagonal(direction.from, direction.to))
                 return PieceMoveStyleEnum.Diagonal;
