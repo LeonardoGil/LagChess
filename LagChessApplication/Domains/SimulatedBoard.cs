@@ -1,9 +1,7 @@
 ﻿namespace LagChessApplication.Domains
 {
-    public class SimulatedBoard(Board board)
+    public class SimulatedBoard()
     {
-        public Board Board { get; init; } = board;
-
-        public static SimulatedBoard CreateClone(Board board) => new(board.Clone());
+        public static Board CreateClone(Board board) => board.Clone();
     }
 }
