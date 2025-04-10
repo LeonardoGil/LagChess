@@ -11,13 +11,16 @@ namespace LagChessApplication.Domains
         public Player White { get; init; } = white;
         public Player Black { get; init; } = black;
 
-        public IPiece[] Pieces { get => [.. White.Pieces, .. Black.Pieces]; }
+        private IPiece[] Pieces { get => [.. White.Pieces, .. Black.Pieces]; }
+        public IPiece[] AvailablePieces { get => Pieces.Where(x => !x.IsDead).ToArray(); }
 
-        public IPiece? GetPiece(Point from) => Pieces.FirstOrDefault(x => x.Position == from);
+        public IPiece? GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
+
+        private bool IsOccupied(Point point) => GetPiece(point) is not null;
 
         public void MovePiece(Point from, Point to)
         {
-            var piece = GetPiece(from);
+            var piece = GetPiece(from) ?? throw new Exception("The position does not contain any piece.");
 
             if (!piece.IsValidMove(to) || !IsPathClear(piece, to) || !CanPlacePiece(piece, to))
             {
@@ -29,35 +32,25 @@ namespace LagChessApplication.Domains
 
         private void SetPiecePosition(IPiece piece, Point to)
         {
-            var isOccupied = IsOccupied(to);
+            var occupiedPiece = GetPiece(to);
 
-            if (isOccupied)
-            {
-                var occupiedPiece = Pieces.First(x => x.Position == to);
-
-                occupiedPiece.Kill();
-            }
+            occupiedPiece?.Kill();
 
             piece.Move(to);
         }
 
         private bool CanPlacePiece(IPiece piece, Point to)
         {
-            if (IsOccupied(to))
-            {
-                var occupiedPiece = Pieces.First(x => x.Position == to);
+            var occupiedPiece = GetPiece(to);
 
-                return piece is not Pawn && piece.Color != occupiedPiece.Color;
-            }
-
-            return true;
+            return occupiedPiece is null || (piece is not Pawn || (piece.Position, to).ConvertToMoveStyleEnum() == PieceMoveStyleEnum.Diagonal) && piece.Color != occupiedPiece.Color;
         }
 
         private bool IsPathClear(IPiece piece, Point to)
         {
             var from = piece.Position;
             var moveStyle = (from, to).ConvertToMoveStyleEnum();
-            
+
             var directionX = Math.Sign(to.X - from.X);
             var directionY = Math.Sign(to.Y - from.Y);
 
@@ -85,14 +78,11 @@ namespace LagChessApplication.Domains
             }
         }
 
-        private bool IsOccupied(Point point)
-        {
-            return Pieces.Any(p => p.Position == point);
-        }
-
         public Board Clone()
         {
             return new Board(White.Clone(), Black.Clone());
         }
+
+        public static Board Create(string white = nameof(White), string black = nameof(Black)) => new(Player.CreateWhite(white), Player.CreateBlack(black));
     }
 }
