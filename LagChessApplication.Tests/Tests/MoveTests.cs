@@ -43,5 +43,23 @@ namespace LagChessApplication.Tests.Tests
             board.GetPiece(new Point(1, 7)).Should().Be(whiteRook);
             board.GetPiece(new Point(8, 8)).Should().Be(blackRook);
         }
+
+        [Fact]
+        public void King_Should_Move_With_Success()
+        {
+            var board = BoardMock.WithOneKingEach();
+
+            var whiteKing = board.White.Pieces.First(x => x is King);
+            var blackKing = board.Black.Pieces.First(x => x is King);
+
+            var whiteDirection = (Size)new Point(0, 1);
+            var blackDirection = (Size)new Point(1, 0);
+
+            board.MovePiece(whiteKing.Position.Value, Point.Add(whiteKing.Position.Value, whiteDirection));
+            board.MovePiece(blackKing.Position.Value, Point.Add(blackKing.Position.Value, blackDirection));
+
+            board.GetPiece(new Point(1, 2)).Should().Be(whiteKing);
+            board.GetPiece(new Point(2, 8)).Should().Be(blackKing);
+        }
     }
 }

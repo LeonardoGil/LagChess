@@ -35,5 +35,20 @@ namespace LagChessApplication.Tests.Mocks
 
             return new Board(white, black);
         }
+
+        public static Board WithOneKingEach()
+        {
+            var white = new Player
+            {
+                Pieces = [PieceBase.CreatePieceWhite<King>(1, 1)]
+            };
+
+            var black = new Player
+            {
+                Pieces = [PieceBase.CreatePieceBlack<King>(1, 8)]
+            };
+
+            return new Board(white, black);
+        }
     }
 }
