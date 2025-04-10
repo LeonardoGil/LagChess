@@ -5,7 +5,19 @@ namespace LagChessApplication.Domains.Pieces
 {
     public abstract class PieceBase(Point position, PieceColorEnum color) : IPiece
     {
-        public Point? Position { get; protected set; } = position;
+        private Point? _position = position;
+        public Point Position
+        {
+            get
+            {
+                if (!_position.HasValue)
+                    throw new Exception("The piece is dead — it has no position.");
+
+                return _position.Value;
+            }
+            protected set => _position = value;
+        }
+
         public bool IsDead { get; protected set; }
 
         public PieceColorEnum Color { get; init; } = color;
@@ -14,7 +26,7 @@ namespace LagChessApplication.Domains.Pieces
 
         public void Kill()
         {
-            Position = null;
+            _position = null;
             IsDead = true;
         }
 
@@ -22,24 +34,22 @@ namespace LagChessApplication.Domains.Pieces
 
         public abstract bool IsValidMove(Point to);
 
-        public abstract IPiece Clone();
+        public IPiece Clone() => CreatePiece(GetType(), Position, Color);
 
-        public static T CreatePiece<T>(Point position, PieceColorEnum color) where T : class => (T)Activator.CreateInstance(typeof(T), position, color);
-        public static T CreatePieceWhite<T>(int x, int y) where T : class => CreatePiece<T>(new Point(x, y), PieceColorEnum.White);
-        public static T CreatePieceBlack<T>(int x, int y) where T : class => CreatePiece<T>(new Point(x, y), PieceColorEnum.Black);
+        public static IPiece CreatePiece(Type type, Point position, PieceColorEnum color) => Activator.CreateInstance(type, position, color) as IPiece;
+        public static T CreatePieceWhite<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.White) as T;
+        public static T CreatePieceBlack<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.Black) as T;
     }
 
     public static class PieceExtension
     {
         public static Point[] GetPossibleMoves(this IPiece piece, PieceMoveStyleEnum moveStyle)
         {
-            var position = piece.Position ?? throw new Exception("Piece is dead");
-
             switch (moveStyle)
             {
                 case PieceMoveStyleEnum.Straight:
-                    var linearX = Enumerable.Range(0, 7).Where(x => position.X != x).Select(x => new Point(x, position.Y));
-                    var linearY = Enumerable.Range(0, 7).Where(y => position.Y != y).Select(y => new Point(position.X, y));
+                    var linearX = Enumerable.Range(0, 7).Where(x => piece.Position.X != x).Select(x => new Point(x, piece.Position.Y));
+                    var linearY = Enumerable.Range(0, 7).Where(y => piece.Position.Y != y).Select(y => new Point(piece.Position.X, y));
 
                     return linearX.Concat(linearY).ToArray();
 
@@ -52,8 +62,8 @@ namespace LagChessApplication.Domains.Pieces
                         {
                             for (int i = 1; i < 8; i++)
                             {
-                                var x = position.X + dx * i;
-                                var y = position.Y + dy * i;
+                                var x = piece.Position.X + dx * i;
+                                var y = piece.Position.Y + dy * i;
 
                                 if (x is >= 0 and < 8 && y is >= 0 and < 8)
                                     diagonal.Add(new Point(x, y));
@@ -65,14 +75,14 @@ namespace LagChessApplication.Domains.Pieces
                 case PieceMoveStyleEnum.LShaped:
                     var knightMoves = new[]
                     {
-                        new Point(position.X + 1, position.Y + 2),
-                        new Point(position.X + 1, position.Y - 2),
-                        new Point(position.X - 1, position.Y + 2),
-                        new Point(position.X - 1, position.Y - 2),
-                        new Point(position.X + 2, position.Y + 1),
-                        new Point(position.X + 2, position.Y - 1),
-                        new Point(position.X - 2, position.Y + 1),
-                        new Point(position.X - 2, position.Y - 1)
+                        new Point(piece.Position.X + 1, piece.Position.Y + 2),
+                        new Point(piece.Position.X + 1, piece.Position.Y - 2),
+                        new Point(piece.Position.X - 1, piece.Position.Y + 2),
+                        new Point(piece.Position.X - 1, piece.Position.Y - 2),
+                        new Point(piece.Position.X + 2, piece.Position.Y + 1),
+                        new Point(piece.Position.X + 2, piece.Position.Y - 1),
+                        new Point(piece.Position.X - 2, piece.Position.Y + 1),
+                        new Point(piece.Position.X - 2, piece.Position.Y - 1)
                     };
 
                     return knightMoves.Where(p => p.X is >= 0 and < 8 && p.Y is >= 0 and < 8).ToArray();

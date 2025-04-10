@@ -13,7 +13,7 @@ namespace LagChessApplication.Domains
 
         public IPiece[] Pieces { get => [.. White.Pieces, .. Black.Pieces]; }
 
-        public IPiece GetPiece(Point from) => Pieces.FirstOrDefault(x => x.Position == from);
+        public IPiece? GetPiece(Point from) => Pieces.FirstOrDefault(x => x.Position == from);
 
         public void MovePiece(Point from, Point to)
         {
@@ -55,7 +55,7 @@ namespace LagChessApplication.Domains
 
         private bool IsPathClear(IPiece piece, Point to)
         {
-            var from = piece.Position ?? throw new Exception("Piece is dead");
+            var from = piece.Position;
             var moveStyle = (from, to).ConvertToMoveStyleEnum();
             
             var directionX = Math.Sign(to.X - from.X);

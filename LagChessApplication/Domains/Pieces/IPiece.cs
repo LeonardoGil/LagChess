@@ -6,7 +6,7 @@ namespace LagChessApplication.Domains.Pieces
 {
     public interface IPiece : IDeepCloneable<IPiece>
     {
-        Point? Position { get; }
+        Point Position { get; }
         bool IsDead { get; }
 
         PieceColorEnum Color { get; }

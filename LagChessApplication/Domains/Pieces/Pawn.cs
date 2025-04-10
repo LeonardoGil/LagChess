@@ -11,29 +11,19 @@ namespace LagChessApplication.Domains.Pieces
             MoveStyle = PieceMoveStyleEnum.OneStraight;
         }
 
-        public override IPiece Clone()
-        {
-            return new Pawn(Position ?? new Point(0, 0), Color)
-            {
-                IsDead = IsDead
-            };
-        }
-
         public override bool IsValidMove(Point to)
         {
-            var position = Position ?? throw new ArgumentNullException();
-
-            var horizontal = to.X == position.X || (to.X == position.X + 1 || to.X == position.X - 1);
-            var vertical = to.Y != position.Y;
+            var horizontal = to.X == Position.X || (to.X == Position.X + 1 || to.X == Position.X - 1);
+            var vertical = to.Y != Position.Y;
 
             switch (Color)
             {
                 case PieceColorEnum.White:
-                    vertical = vertical && to.Y == position.Y + 1;
+                    vertical = vertical && to.Y == Position.Y + 1;
                     break;
 
                 case PieceColorEnum.Black:
-                    vertical = vertical && to.Y == position.Y - 1;
+                    vertical = vertical && to.Y == Position.Y - 1;
                     break;
             }
 

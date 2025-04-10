@@ -19,8 +19,8 @@ namespace LagChessApplication.Tests.Tests
             var whiteDirection = (Size)new Point(0, 1);
             var blackDirection = (Size)new Point(0, -1);
 
-            board.MovePiece(whitePawn.Position.Value, Point.Add(whitePawn.Position.Value, whiteDirection));
-            board.MovePiece(blackPawn.Position.Value, Point.Add(blackPawn.Position.Value, blackDirection));
+            board.MovePiece(whitePawn.Position, Point.Add(whitePawn.Position, whiteDirection));
+            board.MovePiece(blackPawn.Position, Point.Add(blackPawn.Position, blackDirection));
 
             board.GetPiece(new Point(1, 2)).Should().Be(whitePawn);
             board.GetPiece(new Point(1, 7)).Should().Be(blackPawn);
@@ -37,8 +37,8 @@ namespace LagChessApplication.Tests.Tests
             var whiteDirection = (Size)new Point(0, 6);
             var blackDirection = (Size)new Point(7, 0);
 
-            board.MovePiece(whiteRook.Position.Value, Point.Add(whiteRook.Position.Value, whiteDirection));
-            board.MovePiece(blackRook.Position.Value, Point.Add(blackRook.Position.Value, blackDirection));
+            board.MovePiece(whiteRook.Position, Point.Add(whiteRook.Position, whiteDirection));
+            board.MovePiece(blackRook.Position, Point.Add(blackRook.Position, blackDirection));
 
             board.GetPiece(new Point(1, 7)).Should().Be(whiteRook);
             board.GetPiece(new Point(8, 8)).Should().Be(blackRook);
@@ -55,8 +55,8 @@ namespace LagChessApplication.Tests.Tests
             var whiteDirection = (Size)new Point(0, 1);
             var blackDirection = (Size)new Point(1, 0);
 
-            board.MovePiece(whiteKing.Position.Value, Point.Add(whiteKing.Position.Value, whiteDirection));
-            board.MovePiece(blackKing.Position.Value, Point.Add(blackKing.Position.Value, blackDirection));
+            board.MovePiece(whiteKing.Position, Point.Add(whiteKing.Position, whiteDirection));
+            board.MovePiece(blackKing.Position, Point.Add(blackKing.Position, blackDirection));
 
             board.GetPiece(new Point(1, 2)).Should().Be(whiteKing);
             board.GetPiece(new Point(2, 8)).Should().Be(blackKing);

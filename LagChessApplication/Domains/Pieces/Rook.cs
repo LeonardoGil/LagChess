@@ -11,20 +11,10 @@ namespace LagChessApplication.Domains.Pieces
             MoveStyle = PieceMoveStyleEnum.Straight;
         }
 
-        public override IPiece Clone()
-        {
-            return new Rook(Position ?? new Point(0, 0), Color)
-            {
-                IsDead = IsDead
-            };
-        }
-
         public override bool IsValidMove(Point to)
         {
-            var position = Position ?? throw new ArgumentNullException();
-
-            var horizontal = position.X != to.X && position.Y == to.Y;
-            var vertical = position.X == to.X && position.Y != to.Y;
+            var horizontal = Position.X != to.X && Position.Y == to.Y;
+            var vertical = Position.X == to.X && Position.Y != to.Y;
 
             return horizontal || vertical;
         }
