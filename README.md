@@ -13,7 +13,9 @@ O **LagChess** é uma biblioteca desenvolvida em C# que implementa a lógica de 
 ## Funcionalidades
 
 - [x] Inicialização de um tabuleiro padrão ou personalizado
-- [x] Movimentação das peças com validação de regras
+- [x] Movimentação das peças
 - [ ] Identificação de xeque e xeque-mate
 - [ ] Upgrade de Peões
 - [ ] Implementação de roque
+- [ ] Anpassant
+- [ ] Historico de jogadas
