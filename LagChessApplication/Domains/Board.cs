@@ -27,7 +27,42 @@ namespace LagChessApplication.Domains
                 throw MoveInvalidException.Create(piece, to);
             }
 
+            CheckIfMoveResultsInCheck(from, to);
+
             SetPiecePosition(piece, to);
+        }
+
+        private void CheckIfMoveResultsInCheck(Point from, Point to)
+        {
+            var simulatedBoard = SimulatedBoard.CreateClone(this);
+
+            var piece = simulatedBoard.GetPiece(from);
+
+            simulatedBoard.SetPiecePosition(piece, to);
+
+            var king = Pieces.First(x => x is King);
+
+            var opponentColor = piece.Color == PieceColorEnum.White ? PieceColorEnum.Black : PieceColorEnum.White;
+
+            foreach (var opponentPiece in Pieces.Where(x => x.Color == opponentColor && !x.IsDead))
+            {
+                var possibleMoves = opponentPiece.GetPossibleMoves(opponentPiece.MoveStyle).Any(point => point == king.Position);
+
+                if (possibleMoves && IsPathClear(opponentPiece, king.Position))
+                {
+                    throw KingInCheckException.Create(piece, to);
+                }
+
+                if (opponentPiece is Pawn)
+                {
+                    var direction = piece.Color == PieceColorEnum.White ? 1 : -1;
+
+                    if ((king.Position.X == opponentPiece.Position.X - 1 || king.Position.X == opponentPiece.Position.X + 1) && king.Position.Y == opponentPiece.Position.Y + direction)
+                    {
+                        throw KingInCheckException.Create(piece, to);
+                    }
+                }
+            }
         }
 
         private void SetPiecePosition(IPiece piece, Point to)

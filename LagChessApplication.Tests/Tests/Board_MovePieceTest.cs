@@ -56,6 +56,21 @@ namespace LagChessApplication.Tests.Tests
         }
 
         [Fact]
+        public void Pawn_ShouldThrowKingInCheckException_WhenMovingPiece()
+        {
+            var board = Board.Create();
+
+            var moves = new (Point from, Point to)[]
+            {
+                (new Point(3, 2), new Point(3, 3)),
+                (new Point(1, 7), new Point(1, 6)),
+                (new Point(4, 1), new Point(1, 4)),
+            };
+
+            Assert.Throws<KingInCheckException>(() => board.MovePiece(new Point(4, 7), new Point(4, 6)));
+        }
+
+        [Fact]
         public void Bishop_ShouldThrowInvalidMoveException_WhenPieceBlocksThePath()
         {
             var board = Board.Create();
