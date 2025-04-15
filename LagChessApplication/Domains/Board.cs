@@ -40,9 +40,9 @@ namespace LagChessApplication.Domains
 
             simulatedBoard.SetPiecePosition(piece, to);
 
-            var king = Pieces.First(x => x is King);
-
             var opponentColor = piece.Color == PieceColorEnum.White ? PieceColorEnum.Black : PieceColorEnum.White;
+
+            var king = Pieces.First(x => x is King && x.Color == piece.Color);
 
             foreach (var opponentPiece in Pieces.Where(x => x.Color == opponentColor && !x.IsDead))
             {
