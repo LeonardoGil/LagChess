@@ -48,22 +48,20 @@ namespace LagChessApplication.Domains.Pieces
             switch (moveStyle)
             {
                 case PieceMoveStyleEnum.OneStraight:
-                    
+
                     var directions = new Size[]
                     {
-                            new(0, 1),   
-                            new(0, -1),  
-                            new(1, 0),   
-                            new(-1, 0),  
+                            new(0, 1),
+                            new(0, -1),
+                            new(1, 0),
+                            new(-1, 0),
                     };
 
-                    return directions.Select(x => Point.Add(piece.Position, x))
-                                     .Where(position => position.X is >= 0 and < 8 && position.Y is >= 0 and < 8)
-                                     .ToArray();
+                    return directions.Select(x => Point.Add(piece.Position, x)).Where(Board.IsInBoard).ToArray();
 
                 case PieceMoveStyleEnum.Straight:
-                    var linearX = Enumerable.Range(0, 7).Where(x => piece.Position.X != x).Select(x => new Point(x, piece.Position.Y));
-                    var linearY = Enumerable.Range(0, 7).Where(y => piece.Position.Y != y).Select(y => new Point(piece.Position.X, y));
+                    var linearX = Enumerable.Range(1, 8).Where(x => piece.Position.X != x).Select(x => new Point(x, piece.Position.Y));
+                    var linearY = Enumerable.Range(1, 8).Where(y => piece.Position.Y != y).Select(y => new Point(piece.Position.X, y));
 
                     return linearX.Concat(linearY).ToArray();
 
@@ -79,12 +77,14 @@ namespace LagChessApplication.Domains.Pieces
                                 var x = piece.Position.X + dx * i;
                                 var y = piece.Position.Y + dy * i;
 
-                                if (x is >= 0 and < 8 && y is >= 0 and < 8)
-                                    diagonal.Add(new Point(x, y));
+                                var position = new Point(x, y);
+
+                                diagonal.Add(position);
                             }
                         }
                     }
-                    return [.. diagonal];
+
+                    return diagonal.Where(Board.IsInBoard).ToArray();
 
                 case PieceMoveStyleEnum.LShaped:
                     var knightMoves = new[]
@@ -99,7 +99,7 @@ namespace LagChessApplication.Domains.Pieces
                         new Point(piece.Position.X - 2, piece.Position.Y - 1)
                     };
 
-                    return knightMoves.Where(p => p.X is >= 1 and <= 8 && p.Y is >= 1 and <= 8).ToArray();
+                    return knightMoves.Where(Board.IsInBoard).ToArray();
 
                 case PieceMoveStyleEnum.OneAll:
 
@@ -115,12 +115,13 @@ namespace LagChessApplication.Domains.Pieces
                             var x = piece.Position.X + dx;
                             var y = piece.Position.Y + dy;
 
-                            if (x is >= 0 and < 8 && y is >= 0 and < 8)
-                                oneStepMoves.Add(new Point(x, y));
+                            var position = new Point(x, y);
+
+                            oneStepMoves.Add(position);
                         }
                     }
 
-                    return [.. oneStepMoves];
+                    return oneStepMoves.Where(Board.IsInBoard).ToArray();
 
                 case PieceMoveStyleEnum.All:
                     var linearMoves = GetPossibleMoves(piece, PieceMoveStyleEnum.Straight);

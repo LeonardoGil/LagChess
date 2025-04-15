@@ -48,7 +48,7 @@ namespace LagChessApplication.Domains
             {
                 var possibleMoves = opponentPiece.GetPossibleMoves(opponentPiece.MoveStyle).Any(point => point == king.Position);
 
-                if (possibleMoves && IsPathClear(opponentPiece, king.Position))
+                if (possibleMoves && simulatedBoard.IsPathClear(opponentPiece, king.Position))
                 {
                     throw KingInCheckException.Create(piece, to);
                 }
@@ -119,5 +119,8 @@ namespace LagChessApplication.Domains
         }
 
         public static Board Create(string white = nameof(White), string black = nameof(Black)) => new(Player.CreateWhite(white), Player.CreateBlack(black));
+
+        public static bool IsInBoard(Point position) => IsInBoard(position.X, position.Y);
+        public static bool IsInBoard(int x, int y) => x is >= 1 and <= 8 && y is >= 1 and <= 8;
     }
 }
