@@ -56,6 +56,48 @@ namespace LagChessApplication.Tests.Tests
         }
 
         [Fact]
+        public void Pawn_ShouldThrowKingInCheckException_WhenExposingKingToCheck()
+        {
+            var board = Board.Create();
+
+            var moves = new (Point from, Point to)[]
+            {
+                (new Point(3, 2), new Point(3, 3)),
+                (new Point(1, 7), new Point(1, 6)),
+                (new Point(4, 1), new Point(1, 4)),
+            };
+
+            foreach (var (from, to) in moves)
+            {
+                board.MovePiece(from, to);
+            }
+
+            Assert.Throws<KingInCheckException>(() => board.MovePiece(new Point(4, 7), new Point(4, 6)));
+        }
+
+        [Fact]
+        public void Rook_ShouldRevealCheck_WhenPieceMovesOutOfTheWay()
+        {
+            var board = Board.Create();
+
+            var moves = new (Point from, Point to)[]
+            {
+                (new Point(2, 1), new Point(3, 3)),
+                (new Point(1, 7), new Point(1, 6)),
+
+                (new Point(3, 3), new Point(4, 5)),
+                (new Point(5, 7), new Point(5, 6)),
+
+                (new Point(4, 5), new Point(3, 7)),
+            };
+
+            foreach (var (from, to) in moves)
+                board.MovePiece(from, to);
+
+            Assert.Throws<KingInCheckException>(() => board.MovePiece(new Point(4, 8), new Point(7, 5))); 
+        }
+
+        [Fact]
         public void Bishop_ShouldThrowInvalidMoveException_WhenPieceBlocksThePath()
         {
             var board = Board.Create();
