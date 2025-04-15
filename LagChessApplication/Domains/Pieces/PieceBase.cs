@@ -47,6 +47,20 @@ namespace LagChessApplication.Domains.Pieces
         {
             switch (moveStyle)
             {
+                case PieceMoveStyleEnum.OneStraight:
+                    
+                    var directions = new Size[]
+                    {
+                            new(0, 1),   
+                            new(0, -1),  
+                            new(1, 0),   
+                            new(-1, 0),  
+                    };
+
+                    return directions.Select(x => Point.Add(piece.Position, x))
+                                     .Where(position => position.X is >= 0 and < 8 && position.Y is >= 0 and < 8)
+                                     .ToArray();
+
                 case PieceMoveStyleEnum.Straight:
                     var linearX = Enumerable.Range(0, 7).Where(x => piece.Position.X != x).Select(x => new Point(x, piece.Position.Y));
                     var linearY = Enumerable.Range(0, 7).Where(y => piece.Position.Y != y).Select(y => new Point(piece.Position.X, y));
@@ -85,7 +99,28 @@ namespace LagChessApplication.Domains.Pieces
                         new Point(piece.Position.X - 2, piece.Position.Y - 1)
                     };
 
-                    return knightMoves.Where(p => p.X is >= 0 and < 8 && p.Y is >= 0 and < 8).ToArray();
+                    return knightMoves.Where(p => p.X is >= 1 and <= 8 && p.Y is >= 1 and <= 8).ToArray();
+
+                case PieceMoveStyleEnum.OneAll:
+
+                    var oneStepMoves = new List<Point>();
+
+                    for (int dx = -1; dx <= 1; dx++)
+                    {
+                        for (int dy = -1; dy <= 1; dy++)
+                        {
+                            if (dx == 0 && dy == 0)
+                                continue;
+
+                            var x = piece.Position.X + dx;
+                            var y = piece.Position.Y + dy;
+
+                            if (x is >= 0 and < 8 && y is >= 0 and < 8)
+                                oneStepMoves.Add(new Point(x, y));
+                        }
+                    }
+
+                    return [.. oneStepMoves];
 
                 case PieceMoveStyleEnum.All:
                     var linearMoves = GetPossibleMoves(piece, PieceMoveStyleEnum.Straight);
