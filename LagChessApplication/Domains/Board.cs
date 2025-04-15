@@ -36,7 +36,7 @@ namespace LagChessApplication.Domains
         {
             var simulatedBoard = SimulatedBoard.CreateClone(this);
 
-            var piece = simulatedBoard.GetPiece(from);
+            var piece = simulatedBoard.GetPiece(from) ?? throw new Exception($"No piece found at position {from}.");
 
             simulatedBoard.SetPiecePosition(piece, to);
 

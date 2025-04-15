@@ -36,9 +36,9 @@ namespace LagChessApplication.Domains.Pieces
 
         public IPiece Clone() => CreatePiece(GetType(), Position, Color);
 
-        public static IPiece CreatePiece(Type type, Point position, PieceColorEnum color) => Activator.CreateInstance(type, position, color) as IPiece;
-        public static T CreatePieceWhite<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.White) as T;
-        public static T CreatePieceBlack<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.Black) as T;
+        public static IPiece CreatePiece(Type type, Point position, PieceColorEnum color) => Activator.CreateInstance(type, position, color) as IPiece ?? throw new Exception($"Failed to create piece of type '{type.Name}'.");
+        public static T CreatePieceWhite<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.White) as T ?? throw new Exception($"Failed to cast piece of type '{typeof(T).Name}'.");
+        public static T CreatePieceBlack<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.Black) as T ?? throw new Exception($"Failed to cast piece of type '{typeof(T).Name}'.");
     }
 
     public static class PieceExtension

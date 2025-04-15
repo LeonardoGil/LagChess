@@ -6,9 +6,9 @@ namespace LagChessApplication.Domains
 {
     public class Player : IDeepCloneable<Player>
     {
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
-        public IPiece[] Pieces { get; init; }
+        public required IPiece[] Pieces { get; init; }
 
         public IPiece[] AvailablePieces { get => Pieces.Where(x => !x.IsDead).ToArray(); }
 
