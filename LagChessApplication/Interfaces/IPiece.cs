@@ -1,8 +1,7 @@
 ﻿using LagChessApplication.Domains.Enums;
-using LagChessApplication.Interfaces;
 using System.Drawing;
 
-namespace LagChessApplication.Domains.Pieces
+namespace LagChessApplication.Interfaces
 {
     public interface IPiece : IDeepCloneable<IPiece>
     {

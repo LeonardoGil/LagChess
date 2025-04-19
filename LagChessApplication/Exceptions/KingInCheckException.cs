@@ -1,4 +1,4 @@
-﻿using LagChessApplication.Domains.Pieces;
+﻿using LagChessApplication.Interfaces;
 using System.Drawing;
 
 namespace LagChessApplication.Exceptions

@@ -1,6 +1,7 @@
 ﻿using LagChessApplication.Domains.Enums;
 using LagChessApplication.Domains.Pieces;
 using LagChessApplication.Exceptions;
+using LagChessApplication.Extensions;
 using LagChessApplication.Interfaces;
 using System.Drawing;
 
@@ -8,6 +9,8 @@ namespace LagChessApplication.Domains
 {
     public class Board(Player white, Player black) : IDeepCloneable<Board>
     {
+        public Board Clone() => new(White.Clone(), Black.Clone());
+
         public Player White { get; init; } = white;
         public Player Black { get; init; } = black;
 
@@ -18,6 +21,7 @@ namespace LagChessApplication.Domains
 
         private bool IsOccupied(Point point) => GetPiece(point) is not null;
 
+        public void MovePiece(Square from, Square to) => MovePiece(from.Point, to.Point);
         public void MovePiece(Point from, Point to)
         {
             var piece = GetPiece(from) ?? throw new Exception("The position does not contain any piece.");
@@ -112,15 +116,5 @@ namespace LagChessApplication.Domains
                     throw new NotSupportedException("Unknown movement style");
             }
         }
-
-        public Board Clone()
-        {
-            return new Board(White.Clone(), Black.Clone());
-        }
-
-        public static Board Create(string white = nameof(White), string black = nameof(Black)) => new(Player.CreateWhite(white), Player.CreateBlack(black));
-
-        public static bool IsInBoard(Point position) => IsInBoard(position.X, position.Y);
-        public static bool IsInBoard(int x, int y) => x is >= 1 and <= 8 && y is >= 1 and <= 8;
     }
 }
