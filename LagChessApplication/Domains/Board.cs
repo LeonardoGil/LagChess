@@ -9,6 +9,8 @@ namespace LagChessApplication.Domains
 {
     public class Board(Player white, Player black) : IDeepCloneable<Board>
     {
+        public Board Clone() => new(White.Clone(), Black.Clone());
+
         public Player White { get; init; } = white;
         public Player Black { get; init; } = black;
 
@@ -113,15 +115,5 @@ namespace LagChessApplication.Domains
                     throw new NotSupportedException("Unknown movement style");
             }
         }
-
-        public Board Clone()
-        {
-            return new Board(White.Clone(), Black.Clone());
-        }
-
-        public static Board Create(string white = nameof(White), string black = nameof(Black)) => new(Player.CreateWhite(white), Player.CreateBlack(black));
-
-        public static bool IsInBoard(Point position) => IsInBoard(position.X, position.Y);
-        public static bool IsInBoard(int x, int y) => x is >= 1 and <= 8 && y is >= 1 and <= 8;
     }
 }

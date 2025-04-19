@@ -1,5 +1,6 @@
 ﻿using LagChessApplication.Domains;
 using LagChessApplication.Exceptions;
+using LagChessApplication.Extensions;
 using System.Drawing;
 using Xunit;
 
@@ -10,7 +11,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void AllPieces_ShouldMoveCorrectly_FromInitialPositions()
         {
-            var board = Board.Create();
+            var board = BoardExtension.Create();
 
             board.MovePiece(new Point(5, 2), new Point(5, 3)); //e3
             board.MovePiece(new Point(4, 7), new Point(4, 6)); //d6
@@ -38,7 +39,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void AllPieces_ShouldRejectInvalidMoves_FromInitialPositions()
         {
-            var board = Board.Create();
+            var board = BoardExtension.Create();
 
             var invalidMoves = new (Point from, Point to)[5]
             {
@@ -58,7 +59,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void Pawn_ShouldThrowKingInCheckException_WhenExposingKingToCheck()
         {
-            var board = Board.Create();
+            var board = BoardExtension.Create();
 
             var moves = new (Point from, Point to)[]
             {
@@ -78,7 +79,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void Rook_ShouldRevealCheck_WhenPieceMovesOutOfTheWay()
         {
-            var board = Board.Create();
+            var board = BoardExtension.Create();
 
             var moves = new (Point from, Point to)[]
             {
@@ -100,7 +101,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void Bishop_ShouldThrowInvalidMoveException_WhenPieceBlocksThePath()
         {
-            var board = Board.Create();
+            var board = BoardExtension.Create();
 
             board.MovePiece(new Point(5, 2), new Point(5, 3)); //e3
             board.MovePiece(new Point(4, 7), new Point(4, 6)); //d6
