@@ -21,6 +21,7 @@ namespace LagChessApplication.Domains
 
         private bool IsOccupied(Point point) => GetPiece(point) is not null;
 
+        public void MovePiece(Square from, Square to) => MovePiece(from.Point, to.Point);
         public void MovePiece(Point from, Point to)
         {
             var piece = GetPiece(from) ?? throw new Exception("The position does not contain any piece.");

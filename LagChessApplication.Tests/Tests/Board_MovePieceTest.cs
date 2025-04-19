@@ -13,27 +13,26 @@ namespace LagChessApplication.Tests.Tests
         {
             var board = BoardExtension.Create();
 
-            board.MovePiece(new Point(5, 2), new Point(5, 3)); //e3
-            board.MovePiece(new Point(4, 7), new Point(4, 6)); //d6
+            board.MovePiece(Square.E2, Square.E3);
+            board.MovePiece(Square.D7, Square.D6);
 
-            board.MovePiece(new Point(7, 1), new Point(8, 3)); //h3
-            board.MovePiece(new Point(3, 8), new Point(8, 3)); //xh3
+            board.MovePiece(Square.G1, Square.H3);
+            board.MovePiece(Square.C8, Square.H3);
 
-            board.MovePiece(new Point(7, 2), new Point(8, 3)); //gxh3
-            board.MovePiece(new Point(5, 7), new Point(5, 6)); //e6
+            board.MovePiece(Square.G2, Square.H3);
+            board.MovePiece(Square.E7, Square.E6);
 
-            board.MovePiece(new Point(8, 1), new Point(7, 1)); //g1
-            board.MovePiece(new Point(7, 8), new Point(6, 6)); //e6
+            board.MovePiece(Square.H1, Square.G1);
+            board.MovePiece(Square.G8, Square.F6);
 
-            board.MovePiece(new Point(4, 1), new Point(8, 5)); //h5
-            board.MovePiece(new Point(6, 6), new Point(8, 5)); //xh5
+            board.MovePiece(Square.D1, Square.H5);
+            board.MovePiece(Square.F6, Square.H5);
 
-            board.MovePiece(new Point(7, 1), new Point(7, 4)); //g4
-            board.MovePiece(new Point(2, 8), new Point(3, 6)); //c6
+            board.MovePiece(Square.G1, Square.G4);
+            board.MovePiece(Square.B8, Square.C6);
 
-
-            board.MovePiece(new Point(5, 1), new Point(5, 2)); //e2
-            board.MovePiece(new Point(6, 7), new Point(6, 6)); //f6
+            board.MovePiece(Square.E1, Square.E2);
+            board.MovePiece(Square.F7, Square.F6);
         }
 
         [Fact]
@@ -41,13 +40,13 @@ namespace LagChessApplication.Tests.Tests
         {
             var board = BoardExtension.Create();
 
-            var invalidMoves = new (Point from, Point to)[5]
+            var invalidMoves = new (Square from, Square to)[5]
             {
-                (new Point(1, 2), new Point(1, 1)), // Pawn Return
-                (new Point(1, 1), new Point(3, 3)), // Rook Diagonal
-                (new Point(2, 1), new Point(2, 5)), // Knight Straight
-                (new Point(4, 1), new Point(6, 1)), // Queen occupied
-                (new Point(5, 1), new Point(5, 3))  // King move 2
+                (Square.A2, Square.A1), // Pawn Return
+                (Square.A1, Square.C3), // Rook Diagonal
+                (Square.B1, Square.B5), // Knight Straight
+                (Square.D1, Square.F1), // Queen occupied
+                (Square.E1, Square.E3)  // King move 2
             };
 
             foreach (var (from, to) in invalidMoves)
@@ -61,11 +60,11 @@ namespace LagChessApplication.Tests.Tests
         {
             var board = BoardExtension.Create();
 
-            var moves = new (Point from, Point to)[]
+            var moves = new (Square from, Square to)[]
             {
-                (new Point(3, 2), new Point(3, 3)),
-                (new Point(1, 7), new Point(1, 6)),
-                (new Point(4, 1), new Point(1, 4)),
+                (Square.C2, Square.C3),
+                (Square.A7, Square.A6),
+                (Square.D1, Square.A4),
             };
 
             foreach (var (from, to) in moves)
@@ -73,7 +72,7 @@ namespace LagChessApplication.Tests.Tests
                 board.MovePiece(from, to);
             }
 
-            Assert.Throws<KingInCheckException>(() => board.MovePiece(new Point(4, 7), new Point(4, 6)));
+            Assert.Throws<KingInCheckException>(() => board.MovePiece(Square.D7, Square.D6));
         }
 
         [Fact]
@@ -81,21 +80,22 @@ namespace LagChessApplication.Tests.Tests
         {
             var board = BoardExtension.Create();
 
-            var moves = new (Point from, Point to)[]
+            var moves = new (Square from, Square to)[]
             {
-                (new Point(2, 1), new Point(3, 3)),
-                (new Point(1, 7), new Point(1, 6)),
+                (Square.B1, Square.C3), 
+                (Square.A7, Square.A6), 
 
-                (new Point(3, 3), new Point(4, 5)),
-                (new Point(5, 7), new Point(5, 6)),
+                (Square.C3, Square.D5), 
+                (Square.E7, Square.E6), 
 
-                (new Point(4, 5), new Point(3, 7)),
+                (Square.D5, Square.C7), 
             };
 
             foreach (var (from, to) in moves)
                 board.MovePiece(from, to);
 
-            Assert.Throws<KingInCheckException>(() => board.MovePiece(new Point(4, 8), new Point(7, 5))); 
+            Assert.Throws<KingInCheckException>(() => board.MovePiece(Square.D8, Square.G5));
+
         }
 
         [Fact]
@@ -103,15 +103,15 @@ namespace LagChessApplication.Tests.Tests
         {
             var board = BoardExtension.Create();
 
-            board.MovePiece(new Point(5, 2), new Point(5, 3)); //e3
-            board.MovePiece(new Point(4, 7), new Point(4, 6)); //d6
+            board.MovePiece(Square.E2, Square.E3);       
+            board.MovePiece(Square.D7, Square.D6);       
 
-            board.MovePiece(new Point(7, 1), new Point(8, 3)); //h3
-            board.MovePiece(new Point(3, 8), new Point(8, 3)); //xh3
+            board.MovePiece(Square.G1, Square.H3);       
+            board.MovePiece(Square.C8, Square.H3);       
 
             Assert.Throws<MoveInvalidException>(() =>
             {
-                board.MovePiece(new Point(6, 1), new Point(8, 3)); //gxh3
+                board.MovePiece(Square.F1, Square.H3);
             });
         }
     }
