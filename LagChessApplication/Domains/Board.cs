@@ -1,6 +1,7 @@
 ﻿using LagChessApplication.Domains.Enums;
 using LagChessApplication.Domains.Pieces;
 using LagChessApplication.Exceptions;
+using LagChessApplication.Extensions;
 using LagChessApplication.Interfaces;
 using System.Drawing;
 
