@@ -1,4 +1,5 @@
 ﻿using LagChessApplication.Domains.Enums;
+using LagChessApplication.Interfaces;
 using System.Drawing;
 
 namespace LagChessApplication.Domains.Pieces
