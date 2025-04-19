@@ -40,6 +40,9 @@ namespace LagChessApplication.Domains
             Point = new Point(x, y);
         }
 
+        public static implicit operator Square(Point i) => new(i);
+        public static implicit operator Point(Square i) => i.Point;
+
         public static implicit operator Square(string i) => new(i);
         public static implicit operator string(Square i) => i.ToString();
 
