@@ -37,5 +37,22 @@ namespace LagChessApplication.Domains.Pieces
         public abstract bool IsValidMove(Point to);
 
         public IPiece Clone() => PieceExtension.CreatePiece(GetType(), Position, Color) ?? throw new Exception($"Failed to create piece of type '{GetType().Name}'.");
+
+        public IPiece ConvertTo(PieceTypeEnum typeEnum)
+        {
+            var type = PieceExtension.GetType(typeEnum);
+
+            return PieceExtension.CreatePiece(type, Position, Color) ?? throw new Exception($"Failed to create piece of type '{type.Name}'.");
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is null)
+                return false;
+
+            return obj is IPiece piece &&
+                    piece.GetType() == GetType() &&
+                    piece.Color == Color && (piece.IsDead && IsDead || !piece.IsDead && !IsDead && piece.Position == Position);
+        }
     }
 }
