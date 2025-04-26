@@ -7,21 +7,45 @@ using System.Drawing;
 
 namespace LagChessApplication.Domains
 {
-    public class Board(Player white, Player black) : IDeepCloneable<Board>
+    public class Board : IDeepCloneable<Board>
     {
-        public Board Clone() => new(White.Clone(), Black.Clone());
+        #region Constructor
+        public Board(Player white, Player black) => Instance(white, black);
+        
+        private Board(Player white, Player black, Func<PieceTypeEnum> onPawnPromotion)
+        {
+            Instance(white, black);
 
-        public Player White { get; init; } = white;
-        public Player Black { get; init; } = black;
+            OnPawnPromotion += onPawnPromotion;
+        }
+
+        public Board Clone() => new(White.Clone(), Black.Clone(), OnPawnPromotion);
+        
+        private void Instance(Player white, Player black)
+        {
+            ArgumentNullException.ThrowIfNull(white);
+            ArgumentNullException.ThrowIfNull(black);
+
+            White = white;
+            Black = black;
+        }
+        #endregion
+
+        #region Properties
+        public event Func<PieceTypeEnum> OnPawnPromotion;
+
+        public Player White { get; private set; }
+        public Player Black { get; private set; }
 
         private IPiece[] Pieces { get => [.. White.Pieces, .. Black.Pieces]; }
         public IPiece[] AvailablePieces { get => Pieces.Where(x => !x.IsDead).ToArray(); }
+        #endregion
 
+        #region Methods
         public IPiece? GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
 
-        private bool IsOccupied(Point point) => GetPiece(point) is not null;
-
         public void MovePiece(Square from, Square to) => MovePiece(from.Point, to.Point);
+
         public void MovePiece(Point from, Point to)
         {
             var piece = GetPiece(from) ?? throw new Exception("The position does not contain any piece.");
@@ -34,6 +58,13 @@ namespace LagChessApplication.Domains
             CheckIfMoveResultsInCheck(from, to);
 
             SetPiecePosition(piece, to);
+        }
+
+        private bool CanPlacePiece(IPiece piece, Point to)
+        {
+            var occupiedPiece = GetPiece(to);
+
+            return occupiedPiece is null || (piece is not Pawn || (piece.Position, to).ConvertToMoveStyleEnum() == PieceMoveStyleEnum.Diagonal) && piece.Color != occupiedPiece.Color;
         }
 
         private void CheckIfMoveResultsInCheck(Point from, Point to)
@@ -69,21 +100,7 @@ namespace LagChessApplication.Domains
             }
         }
 
-        private void SetPiecePosition(IPiece piece, Point to)
-        {
-            var occupiedPiece = GetPiece(to);
-
-            occupiedPiece?.Kill();
-
-            piece.Move(to);
-        }
-
-        private bool CanPlacePiece(IPiece piece, Point to)
-        {
-            var occupiedPiece = GetPiece(to);
-
-            return occupiedPiece is null || (piece is not Pawn || (piece.Position, to).ConvertToMoveStyleEnum() == PieceMoveStyleEnum.Diagonal) && piece.Color != occupiedPiece.Color;
-        }
+        private bool IsOccupied(Point point) => GetPiece(point) is not null;
 
         private bool IsPathClear(IPiece piece, Point to)
         {
@@ -116,5 +133,34 @@ namespace LagChessApplication.Domains
                     throw new NotSupportedException("Unknown movement style");
             }
         }
+
+        private void PromotePawn(Pawn pawn, PieceTypeEnum type)
+        {
+            ArgumentNullException.ThrowIfNull(pawn);
+
+            var pieces = pawn.Color == PieceColorEnum.White ? White.Pieces : Black.Pieces;
+
+            var pawnIndex = Array.FindIndex(pieces, piece => piece.Equals(pawn));
+
+            if (pawnIndex == -1)
+                throw new InvalidOperationException("Pawn not found at the given position.");
+
+            pieces[pawnIndex] = pawn.ConvertTo(type);
+        }
+
+        private void SetPiecePosition(IPiece piece, Point to)
+        {
+            var occupiedPiece = GetPiece(to);
+
+            occupiedPiece?.Kill();
+
+            piece.Move(to);
+
+            if (piece is Pawn pawn && BoardExtension.ShouldPromotePawn(piece))
+            {
+                PromotePawn(pawn, OnPawnPromotion.Invoke());
+            }
+        }
+        #endregion
     }
 }
