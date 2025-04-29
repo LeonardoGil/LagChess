@@ -1,4 +1,5 @@
 ﻿using LagChessApplication.Domains.Enums;
+using LagChessApplication.Domains.Pieces;
 using LagChessApplication.Interfaces;
 using System.Drawing;
 
@@ -99,6 +100,21 @@ namespace LagChessApplication.Extensions
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public static Type GetType(PieceTypeEnum type)
+        {
+            return type switch
+            {
+                PieceTypeEnum.Pawn => typeof(Pawn),
+                PieceTypeEnum.Rook => typeof(Rook),
+                PieceTypeEnum.Knight => typeof(Knight),
+                PieceTypeEnum.Bishop => typeof(Bishop),
+                PieceTypeEnum.Queen => typeof(Queen),
+                PieceTypeEnum.King => typeof(King),
+                
+                _ => throw new ArgumentOutOfRangeException(nameof(type), $"Unexpected piece type: {type}")
+            };
         }
     }
 }

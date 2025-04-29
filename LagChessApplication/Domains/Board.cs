@@ -7,21 +7,47 @@ using System.Drawing;
 
 namespace LagChessApplication.Domains
 {
-    public class Board(Player white, Player black) : IDeepCloneable<Board>
+    public class Board : IDeepCloneable<Board>
     {
-        public Board Clone() => new(White.Clone(), Black.Clone());
+        #region Constructor
+        public Board(Player white, Player black) => Instance(white, black);
+        
+        internal Board(Player white, Player black, Func<PieceTypeEnum>? onPawnPromotion)
+        {
+            Instance(white, black);
 
-        public Player White { get; init; } = white;
-        public Player Black { get; init; } = black;
+            OnPawnPromotion += onPawnPromotion;
+            _pawnPromotion = OnPawnPromotion?.Invoke();
+        }
+
+        public Board Clone() => new(White.Clone(), Black.Clone(), _pawnPromotion.HasValue ? () => { return _pawnPromotion.Value; } : null);
+        
+        private void Instance(Player white, Player black)
+        {
+            ArgumentNullException.ThrowIfNull(white);
+            ArgumentNullException.ThrowIfNull(black);
+
+            White = white;
+            Black = black;
+        }
+        #endregion
+
+        #region Properties
+        public event Func<PieceTypeEnum> OnPawnPromotion;
+        private PieceTypeEnum? _pawnPromotion;
+
+        public Player White { get; private set; }
+        public Player Black { get; private set; }
 
         private IPiece[] Pieces { get => [.. White.Pieces, .. Black.Pieces]; }
         public IPiece[] AvailablePieces { get => Pieces.Where(x => !x.IsDead).ToArray(); }
+        #endregion
 
+        #region Methods
         public IPiece? GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
 
-        private bool IsOccupied(Point point) => GetPiece(point) is not null;
-
         public void MovePiece(Square from, Square to) => MovePiece(from.Point, to.Point);
+
         public void MovePiece(Point from, Point to)
         {
             var piece = GetPiece(from) ?? throw new Exception("The position does not contain any piece.");
@@ -31,9 +57,32 @@ namespace LagChessApplication.Domains
                 throw MoveInvalidException.Create(piece, to);
             }
 
-            CheckIfMoveResultsInCheck(from, to);
+            try
+            {
+                if (BoardExtension.ShouldPromotePawn(piece, to))
+                {
+                    _pawnPromotion = OnPawnPromotion.Invoke();
+                }
 
-            SetPiecePosition(piece, to);
+                CheckIfMoveResultsInCheck(from, to);
+
+                SetPiecePosition(piece, to);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                _pawnPromotion = null;
+            }
+        }
+
+        private bool CanPlacePiece(IPiece piece, Point to)
+        {
+            var occupiedPiece = GetPiece(to);
+
+            return occupiedPiece is null || (piece is not Pawn || (piece.Position, to).ConvertToMoveStyleEnum() == PieceMoveStyleEnum.Diagonal) && piece.Color != occupiedPiece.Color;
         }
 
         private void CheckIfMoveResultsInCheck(Point from, Point to)
@@ -69,21 +118,7 @@ namespace LagChessApplication.Domains
             }
         }
 
-        private void SetPiecePosition(IPiece piece, Point to)
-        {
-            var occupiedPiece = GetPiece(to);
-
-            occupiedPiece?.Kill();
-
-            piece.Move(to);
-        }
-
-        private bool CanPlacePiece(IPiece piece, Point to)
-        {
-            var occupiedPiece = GetPiece(to);
-
-            return occupiedPiece is null || (piece is not Pawn || (piece.Position, to).ConvertToMoveStyleEnum() == PieceMoveStyleEnum.Diagonal) && piece.Color != occupiedPiece.Color;
-        }
+        private bool IsOccupied(Point point) => GetPiece(point) is not null;
 
         private bool IsPathClear(IPiece piece, Point to)
         {
@@ -116,5 +151,39 @@ namespace LagChessApplication.Domains
                     throw new NotSupportedException("Unknown movement style");
             }
         }
+
+        private void PromotePawn(Pawn pawn, PieceTypeEnum type)
+        {
+            ArgumentNullException.ThrowIfNull(pawn);
+
+            var pieces = pawn.Color == PieceColorEnum.White ? White.Pieces : Black.Pieces;
+
+            var pawnIndex = Array.FindIndex(pieces, piece => piece.Equals(pawn));
+
+            if (pawnIndex == -1)
+                throw new InvalidOperationException("Pawn not found at the given position.");
+
+            pieces[pawnIndex] = pawn.ConvertTo(type);
+        }
+
+        private void SetPiecePosition(IPiece piece, Point to)
+        {
+            var occupiedPiece = GetPiece(to);
+
+            occupiedPiece?.Kill();
+
+            piece.Move(to);
+
+            if (BoardExtension.ShouldPromotePawn(piece))
+            {
+                var pawn = piece as Pawn;
+
+                ArgumentNullException.ThrowIfNull(pawn);
+                ArgumentNullException.ThrowIfNull(_pawnPromotion);
+
+                PromotePawn(pawn, _pawnPromotion.Value);
+            }
+        }
+        #endregion
     }
 }
