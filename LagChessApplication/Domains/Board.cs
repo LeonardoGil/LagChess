@@ -12,14 +12,15 @@ namespace LagChessApplication.Domains
         #region Constructor
         public Board(Player white, Player black) => Instance(white, black);
         
-        private Board(Player white, Player black, Func<PieceTypeEnum> onPawnPromotion)
+        internal Board(Player white, Player black, Func<PieceTypeEnum>? onPawnPromotion)
         {
             Instance(white, black);
 
             OnPawnPromotion += onPawnPromotion;
+            _pawnPromotion = OnPawnPromotion?.Invoke();
         }
 
-        public Board Clone() => new(White.Clone(), Black.Clone(), OnPawnPromotion);
+        public Board Clone() => new(White.Clone(), Black.Clone(), _pawnPromotion.HasValue ? () => { return _pawnPromotion.Value; } : null);
         
         private void Instance(Player white, Player black)
         {
@@ -33,6 +34,7 @@ namespace LagChessApplication.Domains
 
         #region Properties
         public event Func<PieceTypeEnum> OnPawnPromotion;
+        private PieceTypeEnum? _pawnPromotion;
 
         public Player White { get; private set; }
         public Player Black { get; private set; }
@@ -55,9 +57,25 @@ namespace LagChessApplication.Domains
                 throw MoveInvalidException.Create(piece, to);
             }
 
-            CheckIfMoveResultsInCheck(from, to);
+            try
+            {
+                if (BoardExtension.ShouldPromotePawn(piece, to))
+                {
+                    _pawnPromotion = OnPawnPromotion.Invoke();
+                }
 
-            SetPiecePosition(piece, to);
+                CheckIfMoveResultsInCheck(from, to);
+
+                SetPiecePosition(piece, to);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                _pawnPromotion = null;
+            }
         }
 
         private bool CanPlacePiece(IPiece piece, Point to)
@@ -156,9 +174,14 @@ namespace LagChessApplication.Domains
 
             piece.Move(to);
 
-            if (piece is Pawn pawn && BoardExtension.ShouldPromotePawn(piece))
+            if (BoardExtension.ShouldPromotePawn(piece))
             {
-                PromotePawn(pawn, OnPawnPromotion.Invoke());
+                var pawn = piece as Pawn;
+
+                ArgumentNullException.ThrowIfNull(pawn);
+                ArgumentNullException.ThrowIfNull(_pawnPromotion);
+
+                PromotePawn(pawn, _pawnPromotion.Value);
             }
         }
         #endregion
