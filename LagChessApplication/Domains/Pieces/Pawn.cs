@@ -12,23 +12,26 @@ namespace LagChessApplication.Domains.Pieces
             MoveStyle = PieceMoveStyleEnum.OneStraight;
         }
 
+        public bool IsAttack(Point to)
+        {
+            var moveStyle = (Position, to).ConvertToMoveStyleEnum();
+
+            return moveStyle == PieceMoveStyleEnum.Diagonal;
+        }
+
         public override bool IsValidMove(Point to)
         {
-            var horizontal = to.X == Position.X || (to.X == Position.X + 1 || to.X == Position.X - 1);
-            var vertical = to.Y != Position.Y;
+            var move = _isAtStartingPosition ? 2 : 1;
 
-            switch (Color)
+            var horizontal = to.X >= Position.X - 1 && to.X <= Position.X + 1;
+
+            return Color switch
             {
-                case PieceColorEnum.White:
-                    vertical = vertical && to.Y == Position.Y + 1;
-                    break;
-
-                case PieceColorEnum.Black:
-                    vertical = vertical && to.Y == Position.Y - 1;
-                    break;
-            }
-
-            return horizontal && vertical;
+                PieceColorEnum.White => horizontal && (to.Y > Position.Y && to.Y <= Position.Y + move),
+                PieceColorEnum.Black => horizontal && (to.Y < Position.Y && to.Y >= Position.Y - move),
+                
+                _ => throw new NotSupportedException(),
+            };
         }
     }
 }

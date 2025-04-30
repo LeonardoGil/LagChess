@@ -10,41 +10,37 @@ namespace LagChessApplication.Domains
     public class Board : IDeepCloneable<Board>
     {
         #region Constructor
-        public Board(Player white, Player black) => Instance(white, black);
-        
-        internal Board(Player white, Player black, Func<PieceTypeEnum>? onPawnPromotion)
+        public Board() { }
+
+        internal Board(Func<PieceTypeEnum>? onPawnPromotion)
         {
-            Instance(white, black);
-
-            OnPawnPromotion += onPawnPromotion;
-            _pawnPromotion = OnPawnPromotion?.Invoke();
-        }
-
-        public Board Clone() => new(White.Clone(), Black.Clone(), _pawnPromotion.HasValue ? () => { return _pawnPromotion.Value; } : null);
-        
-        private void Instance(Player white, Player black)
-        {
-            ArgumentNullException.ThrowIfNull(white);
-            ArgumentNullException.ThrowIfNull(black);
-
-            White = white;
-            Black = black;
+            if (onPawnPromotion is not null)
+            {
+                OnPawnPromotion += onPawnPromotion;
+                _pawnPromotion = OnPawnPromotion.Invoke();
+            }
         }
         #endregion
 
         #region Properties
-        public event Func<PieceTypeEnum> OnPawnPromotion;
+        public event Func<PieceTypeEnum>? OnPawnPromotion;
         private PieceTypeEnum? _pawnPromotion;
 
-        public Player White { get; private set; }
-        public Player Black { get; private set; }
+        public required Player White { get; set; }
+        public required Player Black { get; set; }
 
         private IPiece[] Pieces { get => [.. White.Pieces, .. Black.Pieces]; }
         public IPiece[] AvailablePieces { get => Pieces.Where(x => !x.IsDead).ToArray(); }
         #endregion
 
         #region Methods
-        public IPiece? GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
+        public Board Clone() => new(_pawnPromotion.HasValue ? () => { return _pawnPromotion.Value; } : null)
+        {
+            White = White.Clone(),
+            Black = Black.Clone()
+        };
+
+        internal IPiece? GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
 
         public void MovePiece(Square from, Square to) => MovePiece(from.Point, to.Point);
 
@@ -52,15 +48,23 @@ namespace LagChessApplication.Domains
         {
             var piece = GetPiece(from) ?? throw new Exception("The position does not contain any piece.");
 
-            if (!piece.IsValidMove(to) || !IsPathClear(piece, to) || !CanPlacePiece(piece, to))
-            {
+            if (!piece.IsValidMove(to))
                 throw MoveInvalidException.Create(piece, to);
-            }
+
+            if (IsPawnMovingDiagonallyInvalid(piece, to))
+                throw MoveInvalidException.Create(piece, to);
+
+            if (!IsPathClear(piece, to))
+                throw MoveInvalidException.Create(piece, to);
+
+            if (!CanPlacePiece(piece, to))
+                throw MoveInvalidException.Create(piece, to);
 
             try
             {
                 if (BoardExtension.ShouldPromotePawn(piece, to))
                 {
+                    ArgumentNullException.ThrowIfNull(OnPawnPromotion);
                     _pawnPromotion = OnPawnPromotion.Invoke();
                 }
 
@@ -82,7 +86,7 @@ namespace LagChessApplication.Domains
         {
             var occupiedPiece = GetPiece(to);
 
-            return occupiedPiece is null || (piece is not Pawn || (piece.Position, to).ConvertToMoveStyleEnum() == PieceMoveStyleEnum.Diagonal) && piece.Color != occupiedPiece.Color;
+            return occupiedPiece is null || occupiedPiece.Color != piece.Color;
         }
 
         private void CheckIfMoveResultsInCheck(Point from, Point to)
@@ -150,6 +154,11 @@ namespace LagChessApplication.Domains
                 default:
                     throw new NotSupportedException("Unknown movement style");
             }
+        }
+
+        private bool IsPawnMovingDiagonallyInvalid(IPiece piece, Point to)
+        {
+            return piece is Pawn pawn && pawn.IsAttack(to) && (!IsOccupied(to) || GetPiece(to)?.Color == pawn.Color);
         }
 
         private void PromotePawn(Pawn pawn, PieceTypeEnum type)

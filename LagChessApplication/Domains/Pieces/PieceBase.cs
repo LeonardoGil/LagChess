@@ -7,7 +7,9 @@ namespace LagChessApplication.Domains.Pieces
 {
     public abstract class PieceBase(Point position, PieceColorEnum color) : IPiece
     {
+        protected bool _isAtStartingPosition = true;
         private Point? _position = position;
+
         public Point Position
         {
             get
@@ -19,7 +21,6 @@ namespace LagChessApplication.Domains.Pieces
             }
             protected set => _position = value;
         }
-
         public bool IsDead { get; protected set; }
 
         public PieceColorEnum Color { get; init; } = color;
@@ -32,7 +33,13 @@ namespace LagChessApplication.Domains.Pieces
             IsDead = true;
         }
 
-        public void Move(Point to) => Position = to;
+        public void Move(Point to)
+        {
+            Position = to;
+
+            if (_isAtStartingPosition)
+                _isAtStartingPosition = false;
+        }
 
         public abstract bool IsValidMove(Point to);
 
@@ -53,6 +60,19 @@ namespace LagChessApplication.Domains.Pieces
             return obj is IPiece piece &&
                     piece.GetType() == GetType() &&
                     piece.Color == Color && (piece.IsDead && IsDead || !piece.IsDead && !IsDead && piece.Position == Position);
+        }
+        public override int GetHashCode()
+        {
+            var hash = new HashCode();
+
+            hash.Add(GetType());
+            hash.Add(Color);
+            hash.Add(IsDead);
+
+            if (!IsDead)
+                hash.Add(Position);
+
+            return hash.ToHashCode();
         }
     }
 }
