@@ -1,5 +1,6 @@
 ﻿using LagChessApplication.Domains;
 using LagChessApplication.Domains.Enums;
+using LagChessApplication.Exceptions;
 using LagChessApplication.Extensions;
 using Xunit;
 
@@ -34,6 +35,32 @@ namespace LagChessApplication.Tests.Tests
 
             board.MovePiece(Square.B8, Square.C8);
             board.MovePiece(Square.H4, Square.H2);
+        }
+
+        [Fact]
+        public void Pawn_ShouldThrowException_WhenMovingDiagonallyWithoutCapture()
+        {
+            var board = BoardExtension.Create();
+
+            board.MovePiece(Square.B2, Square.B3);
+            board.MovePiece(Square.A7, Square.A6);
+
+            Assert.Throws<MoveInvalidException>(() => board.MovePiece(Square.B3, Square.C4));
+        }
+
+
+        [Fact]
+        public void Pawn_ShouldAllowDiagonalMove_WhenCapturing()
+        {
+            var board = BoardExtension.Create();
+
+            board.MovePiece(Square.B2, Square.B3);
+            board.MovePiece(Square.A7, Square.A6);
+
+            board.MovePiece(Square.B3, Square.B4);
+            board.MovePiece(Square.A6, Square.A5);
+
+            board.MovePiece(Square.B4, Square.A5);
         }
     }
 }
