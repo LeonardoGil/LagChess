@@ -8,7 +8,11 @@ namespace LagChessApplication.Extensions
 {
     public static class BoardExtension
     {
-        public static Board Create(string white = "white", string black = "black") => new(PlayerExtension.CreateWhite(white), PlayerExtension.CreateBlack(black));
+        public static Board Create(string white = "white", string black = "black") => new()
+        {
+            White = PlayerExtension.CreateWhite(white),
+            Black = PlayerExtension.CreateBlack(black)
+        };
 
 
         public static bool IsInBoard(Point position) => IsInBoard(position.X, position.Y);

@@ -10,40 +10,37 @@ namespace LagChessApplication.Domains
     public class Board : IDeepCloneable<Board>
     {
         #region Constructor
-        public Board(Player white, Player black) => Instance(white, black);
-        
-        internal Board(Player white, Player black, Func<PieceTypeEnum>? onPawnPromotion)
+        public Board() { }
+
+        internal Board(Func<PieceTypeEnum>? onPawnPromotion)
         {
-            Instance(white, black);
-
-            OnPawnPromotion += onPawnPromotion;
-            _pawnPromotion = OnPawnPromotion?.Invoke();
-        }
-
-        public Board Clone() => new(White.Clone(), Black.Clone(), _pawnPromotion.HasValue ? () => { return _pawnPromotion.Value; } : null);
-        
-        private void Instance(Player white, Player black)
-        {
-            ArgumentNullException.ThrowIfNull(white);
-            ArgumentNullException.ThrowIfNull(black);
-
-            White = white;
-            Black = black;
+            if (onPawnPromotion is not null)
+            {
+                OnPawnPromotion += onPawnPromotion;
+                _pawnPromotion = OnPawnPromotion.Invoke();
+            }
         }
         #endregion
 
         #region Properties
-        public event Func<PieceTypeEnum> OnPawnPromotion;
+        public event Func<PieceTypeEnum>? OnPawnPromotion;
         private PieceTypeEnum? _pawnPromotion;
 
-        public Player White { get; private set; }
-        public Player Black { get; private set; }
+        public required Player White { get; set; }
+        public required Player Black { get; set; }
 
         private IPiece[] Pieces { get => [.. White.Pieces, .. Black.Pieces]; }
         public IPiece[] AvailablePieces { get => Pieces.Where(x => !x.IsDead).ToArray(); }
         #endregion
 
         #region Methods
+        public Board Clone() => new(_pawnPromotion.HasValue ? () => { return _pawnPromotion.Value; }
+        : null)
+        {
+            White = White.Clone(),
+            Black = Black.Clone()
+        };
+
         public IPiece? GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
 
         public void MovePiece(Square from, Square to) => MovePiece(from.Point, to.Point);
@@ -69,6 +66,7 @@ namespace LagChessApplication.Domains
             {
                 if (BoardExtension.ShouldPromotePawn(piece, to))
                 {
+                    ArgumentNullException.ThrowIfNull(OnPawnPromotion);
                     _pawnPromotion = OnPawnPromotion.Invoke();
                 }
 

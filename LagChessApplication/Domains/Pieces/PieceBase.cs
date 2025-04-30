@@ -9,7 +9,7 @@ namespace LagChessApplication.Domains.Pieces
     {
         protected bool _isAtStartingPosition = true;
         private Point? _position = position;
-        
+
         public Point Position
         {
             get
@@ -60,6 +60,19 @@ namespace LagChessApplication.Domains.Pieces
             return obj is IPiece piece &&
                     piece.GetType() == GetType() &&
                     piece.Color == Color && (piece.IsDead && IsDead || !piece.IsDead && !IsDead && piece.Position == Position);
+        }
+        public override int GetHashCode()
+        {
+            var hash = new HashCode();
+
+            hash.Add(GetType());
+            hash.Add(Color);
+            hash.Add(IsDead);
+
+            if (!IsDead)
+                hash.Add(Position);
+
+            return hash.ToHashCode();
         }
     }
 }
