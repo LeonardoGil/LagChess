@@ -52,10 +52,18 @@ namespace LagChessApplication.Domains
         {
             var piece = GetPiece(from) ?? throw new Exception("The position does not contain any piece.");
 
-            if (!piece.IsValidMove(to) || !IsPathClear(piece, to) || !CanPlacePiece(piece, to))
-            {
+            if (!piece.IsValidMove(to))
                 throw MoveInvalidException.Create(piece, to);
-            }
+
+            // TO DO: Valida movimento diagonal Peao. Realocar para um lugar melhor
+            if (piece is Pawn pawn && pawn.IsAttack(to) && (!IsOccupied(to) || GetPiece(to)?.Color == pawn.Color))
+                throw MoveInvalidException.Create(piece, to);
+
+            if (!IsPathClear(piece, to))
+                throw MoveInvalidException.Create(piece, to);
+
+            if (!CanPlacePiece(piece, to))
+                throw MoveInvalidException.Create(piece, to);
 
             try
             {
@@ -82,7 +90,7 @@ namespace LagChessApplication.Domains
         {
             var occupiedPiece = GetPiece(to);
 
-            return occupiedPiece is null || (piece is not Pawn || (piece.Position, to).ConvertToMoveStyleEnum() == PieceMoveStyleEnum.Diagonal) && piece.Color != occupiedPiece.Color;
+            return occupiedPiece is null || occupiedPiece.Color != piece.Color;
         }
 
         private void CheckIfMoveResultsInCheck(Point from, Point to)

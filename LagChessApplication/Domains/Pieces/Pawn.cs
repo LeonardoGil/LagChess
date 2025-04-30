@@ -12,6 +12,13 @@ namespace LagChessApplication.Domains.Pieces
             MoveStyle = PieceMoveStyleEnum.OneStraight;
         }
 
+        public bool IsAttack(Point to)
+        {
+            var moveStyle = (Position, to).ConvertToMoveStyleEnum();
+
+            return moveStyle == PieceMoveStyleEnum.Diagonal;
+        }
+
         public override bool IsValidMove(Point to)
         {
             var move = _isAtStartingPosition ? 2 : 1;
