@@ -34,14 +34,13 @@ namespace LagChessApplication.Domains
         #endregion
 
         #region Methods
-        public Board Clone() => new(_pawnPromotion.HasValue ? () => { return _pawnPromotion.Value; }
-        : null)
+        public Board Clone() => new(_pawnPromotion.HasValue ? () => { return _pawnPromotion.Value; } : null)
         {
             White = White.Clone(),
             Black = Black.Clone()
         };
 
-        public IPiece? GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
+        internal IPiece? GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
 
         public void MovePiece(Square from, Square to) => MovePiece(from.Point, to.Point);
 
@@ -52,8 +51,7 @@ namespace LagChessApplication.Domains
             if (!piece.IsValidMove(to))
                 throw MoveInvalidException.Create(piece, to);
 
-            // TO DO: Valida movimento diagonal Peao. Realocar para um lugar melhor
-            if (piece is Pawn pawn && pawn.IsAttack(to) && (!IsOccupied(to) || GetPiece(to)?.Color == pawn.Color))
+            if (IsPawnMovingDiagonallyInvalid(piece, to))
                 throw MoveInvalidException.Create(piece, to);
 
             if (!IsPathClear(piece, to))
@@ -156,6 +154,11 @@ namespace LagChessApplication.Domains
                 default:
                     throw new NotSupportedException("Unknown movement style");
             }
+        }
+
+        private bool IsPawnMovingDiagonallyInvalid(IPiece piece, Point to)
+        {
+            return piece is Pawn pawn && pawn.IsAttack(to) && (!IsOccupied(to) || GetPiece(to)?.Color == pawn.Color);
         }
 
         private void PromotePawn(Pawn pawn, PieceTypeEnum type)

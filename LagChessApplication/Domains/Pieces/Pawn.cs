@@ -24,18 +24,14 @@ namespace LagChessApplication.Domains.Pieces
             var move = _isAtStartingPosition ? 2 : 1;
 
             var horizontal = to.X >= Position.X - 1 && to.X <= Position.X + 1;
-            
-            switch (Color)
+
+            return Color switch
             {
-                case PieceColorEnum.White:
-                    return horizontal && (to.Y > Position.Y && to.Y <= Position.Y + move);
-
-                case PieceColorEnum.Black:
-                    return horizontal && (to.Y < Position.Y && to.Y >= Position.Y - move);
-
-                default:
-                    throw new NotSupportedException();
-            }
+                PieceColorEnum.White => horizontal && (to.Y > Position.Y && to.Y <= Position.Y + move),
+                PieceColorEnum.Black => horizontal && (to.Y < Position.Y && to.Y >= Position.Y - move),
+                
+                _ => throw new NotSupportedException(),
+            };
         }
     }
 }
