@@ -14,21 +14,21 @@ namespace LagChessApplication.Domains.Pieces
 
         public override bool IsValidMove(Point to)
         {
-            var horizontal = to.X == Position.X || (to.X == Position.X + 1 || to.X == Position.X - 1);
-            var vertical = to.Y != Position.Y;
+            var move = _isAtStartingPosition ? 2 : 1;
 
+            var horizontal = to.X >= Position.X - 1 && to.X <= Position.X + 1;
+            
             switch (Color)
             {
                 case PieceColorEnum.White:
-                    vertical = vertical && to.Y == Position.Y + 1;
-                    break;
+                    return horizontal && (to.Y > Position.Y && to.Y <= Position.Y + move);
 
                 case PieceColorEnum.Black:
-                    vertical = vertical && to.Y == Position.Y - 1;
-                    break;
-            }
+                    return horizontal && (to.Y < Position.Y && to.Y >= Position.Y - move);
 
-            return horizontal && vertical;
+                default:
+                    throw new NotSupportedException();
+            }
         }
     }
 }
