@@ -45,8 +45,6 @@ namespace LagChessApplication.Domains
 
         public IPiece? GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
 
-        private IPiece[] GetPiecesColor(PieceColorEnum color) => AvailablePieces.Where(x => x.Color == color).ToArray();
-
         public void MovePiece(Square from, Square to) => MovePiece(from.Point, to.Point);
 
         public void MovePiece(Point from, Point to)
@@ -170,14 +168,12 @@ namespace LagChessApplication.Domains
         {
             ArgumentNullException.ThrowIfNull(pawn);
 
-            var pieces = GetPiecesColor(pawn.Color);
-
-            var pawnIndex = Array.FindIndex(pieces, piece => piece.Equals(pawn));
+            var pawnIndex = Array.FindIndex(Pieces, piece => piece.Equals(pawn));
 
             if (pawnIndex == -1)
                 throw new InvalidOperationException("Pawn not found at the given position.");
 
-            pieces[pawnIndex] = pawn.ConvertTo(type);
+            Pieces[pawnIndex] = pawn.ConvertTo(type);
         }
 
         private void SetPiecePosition(IPiece piece, Point to)
