@@ -3,44 +3,49 @@ using LagChessApplication.Domains.Pieces;
 using LagChessApplication.Exceptions;
 using LagChessApplication.Extensions;
 using LagChessApplication.Interfaces;
+using System.ComponentModel;
 using System.Drawing;
 
 namespace LagChessApplication.Domains
 {
     public class Board : IDeepCloneable<Board>
     {
-        #region Constructor
-        public Board() { }
-
-        internal Board(Func<PieceTypeEnum>? onPawnPromotion)
+        public Board(IPiece[] pieces, Func<PieceTypeEnum>? onPawnPromotion = null)
         {
+            Pieces = pieces;
+
             if (onPawnPromotion is not null)
             {
                 OnPawnPromotion += onPawnPromotion;
                 _pawnPromotion = OnPawnPromotion.Invoke();
             }
         }
-        #endregion
 
-        #region Properties
         public event Func<PieceTypeEnum>? OnPawnPromotion;
+        
         private PieceTypeEnum? _pawnPromotion;
 
-        public required Player White { get; set; }
-        public required Player Black { get; set; }
-
-        private IPiece[] Pieces { get => [.. White.Pieces, .. Black.Pieces]; }
+        public IPiece[] Pieces { get; }
+        
         public IPiece[] AvailablePieces { get => Pieces.Where(x => !x.IsDead).ToArray(); }
-        #endregion
 
-        #region Methods
-        public Board Clone() => new(_pawnPromotion.HasValue ? () => { return _pawnPromotion.Value; } : null)
+        public Board Clone()
         {
-            White = White.Clone(),
-            Black = Black.Clone()
-        };
+            var pieces = AvailablePieces.Select(x => x.Clone()).ToArray();
 
-        internal IPiece? GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
+            var onPawnPromotion = default(Func<PieceTypeEnum>?);
+                
+            if (_pawnPromotion.HasValue)
+            {
+                onPawnPromotion = () => { return _pawnPromotion.Value; };
+            }
+                
+            return new Board(pieces, onPawnPromotion);
+        }
+
+        public IPiece? GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
+
+        private IPiece[] GetPiecesColor(PieceColorEnum color) => AvailablePieces.Where(x => x.Color == color).ToArray();
 
         public void MovePiece(Square from, Square to) => MovePiece(from.Point, to.Point);
 
@@ -165,7 +170,7 @@ namespace LagChessApplication.Domains
         {
             ArgumentNullException.ThrowIfNull(pawn);
 
-            var pieces = pawn.Color == PieceColorEnum.White ? White.Pieces : Black.Pieces;
+            var pieces = GetPiecesColor(pawn.Color);
 
             var pawnIndex = Array.FindIndex(pieces, piece => piece.Equals(pawn));
 
@@ -193,6 +198,5 @@ namespace LagChessApplication.Domains
                 PromotePawn(pawn, _pawnPromotion.Value);
             }
         }
-        #endregion
     }
 }

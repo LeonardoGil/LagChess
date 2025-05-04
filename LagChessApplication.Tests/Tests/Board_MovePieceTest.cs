@@ -11,7 +11,8 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void AllPieces_ShouldMoveCorrectly_FromInitialPositions()
         {
-            var board = BoardExtension.Create();
+            var gameChess = GameChessExtension.Create();
+            var board = gameChess.Board;
 
             board.MovePiece(Square.E2, Square.E3);
             board.MovePiece(Square.D7, Square.D6);
@@ -38,7 +39,8 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void AllPieces_ShouldRejectInvalidMoves_FromInitialPositions()
         {
-            var board = BoardExtension.Create();
+            var gameChess = GameChessExtension.Create();
+            var board = gameChess.Board;
 
             var invalidMoves = new (Square from, Square to)[5]
             {
@@ -58,7 +60,8 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void Pawn_ShouldThrowKingInCheckException_WhenExposingKingToCheck()
         {
-            var board = BoardExtension.Create();
+            var gameChess = GameChessExtension.Create();
+            var board = gameChess.Board;
 
             var moves = new (Square from, Square to)[]
             {
@@ -78,7 +81,8 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void Rook_ShouldRevealCheck_WhenPieceMovesOutOfTheWay()
         {
-            var board = BoardExtension.Create();
+            var gameChess = GameChessExtension.Create();
+            var board = gameChess.Board;
 
             var moves = new (Square from, Square to)[]
             {
@@ -101,7 +105,8 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void Bishop_ShouldThrowInvalidMoveException_WhenPieceBlocksThePath()
         {
-            var board = BoardExtension.Create();
+            var gameChess = GameChessExtension.Create();
+            var board = gameChess.Board;
 
             board.MovePiece(Square.E2, Square.E3);       
             board.MovePiece(Square.D7, Square.D6);       
