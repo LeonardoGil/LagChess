@@ -1,4 +1,7 @@
-﻿using LagChessApplication.Interfaces;
+﻿using LagChessApplication.Domains.Enums;
+using LagChessApplication.Exceptions;
+using LagChessApplication.Interfaces;
+using System.Drawing;
 
 namespace LagChessApplication.Domains
 {
@@ -21,6 +24,32 @@ namespace LagChessApplication.Domains
         public Player White { get; init; }
         public Player Black { get; init; }
 
+        public int Turn { get; private set; } = 1;
+        public PieceColorEnum TurnPlayer { get; private set; }
 
+        public void Play(Point from, Point to)
+        {
+            if (!IsMoveFromCurrentPlayer(from))
+                throw InvalidPieceOwnershipException.Create(Board.GetPiece(from), TurnPlayer);
+
+            Board.MovePiece(from, to);
+
+            NextTurn();
+        }
+
+        private void NextTurn()
+        {
+            if (TurnPlayer == PieceColorEnum.White)
+            {
+                TurnPlayer = PieceColorEnum.Black;
+            }
+            else
+            {
+                TurnPlayer = PieceColorEnum.White;
+                Turn++;
+            }
+        }
+
+        private bool IsMoveFromCurrentPlayer(Point from) => Board.GetPiece(from).Color == TurnPlayer;
     }
 }
