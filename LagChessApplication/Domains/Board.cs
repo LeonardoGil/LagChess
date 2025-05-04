@@ -3,7 +3,6 @@ using LagChessApplication.Domains.Pieces;
 using LagChessApplication.Exceptions;
 using LagChessApplication.Extensions;
 using LagChessApplication.Interfaces;
-using System.ComponentModel;
 using System.Drawing;
 
 namespace LagChessApplication.Domains
@@ -22,11 +21,11 @@ namespace LagChessApplication.Domains
         }
 
         public event Func<PieceTypeEnum>? OnPawnPromotion;
-        
+
         private PieceTypeEnum? _pawnPromotion;
 
         public IPiece[] Pieces { get; }
-        
+
         public IPiece[] AvailablePieces { get => Pieces.Where(x => !x.IsDead).ToArray(); }
 
         public Board Clone()
@@ -34,22 +33,23 @@ namespace LagChessApplication.Domains
             var pieces = AvailablePieces.Select(x => x.Clone()).ToArray();
 
             var onPawnPromotion = default(Func<PieceTypeEnum>?);
-                
+
             if (_pawnPromotion.HasValue)
             {
                 onPawnPromotion = () => { return _pawnPromotion.Value; };
             }
-                
+
             return new Board(pieces, onPawnPromotion);
         }
 
-        public IPiece? GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
+        public IPiece GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from) ?? throw PieceNotFoundException.Create(from);
+        public IPiece? GetTryPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
 
         public void MovePiece(Square from, Square to) => MovePiece(from.Point, to.Point);
 
         public void MovePiece(Point from, Point to)
         {
-            var piece = GetPiece(from) ?? throw new Exception("The position does not contain any piece.");
+            var piece = GetPiece(from);
 
             if (!piece.IsValidMove(to))
                 throw MoveInvalidException.Create(piece, to);
@@ -87,7 +87,7 @@ namespace LagChessApplication.Domains
 
         private bool CanPlacePiece(IPiece piece, Point to)
         {
-            var occupiedPiece = GetPiece(to);
+            var occupiedPiece = GetTryPiece(to);
 
             return occupiedPiece is null || occupiedPiece.Color != piece.Color;
         }
@@ -96,7 +96,7 @@ namespace LagChessApplication.Domains
         {
             var simulatedBoard = SimulatedBoard.CreateClone(this);
 
-            var piece = simulatedBoard.GetPiece(from) ?? throw new Exception($"No piece found at position {from}.");
+            var piece = simulatedBoard.GetPiece(from);
 
             simulatedBoard.SetPiecePosition(piece, to);
 
@@ -125,7 +125,7 @@ namespace LagChessApplication.Domains
             }
         }
 
-        private bool IsOccupied(Point point) => GetPiece(point) is not null;
+        private bool IsOccupied(Point point) => GetTryPiece(point) is not null;
 
         private bool IsPathClear(IPiece piece, Point to)
         {
@@ -161,7 +161,7 @@ namespace LagChessApplication.Domains
 
         private bool IsPawnMovingDiagonallyInvalid(IPiece piece, Point to)
         {
-            return piece is Pawn pawn && pawn.IsAttack(to) && (!IsOccupied(to) || GetPiece(to)?.Color == pawn.Color);
+            return piece is Pawn pawn && pawn.IsAttack(to) && (!IsOccupied(to) || GetPiece(to).Color == pawn.Color);
         }
 
         private void PromotePawn(Pawn pawn, PieceTypeEnum type)
@@ -178,7 +178,7 @@ namespace LagChessApplication.Domains
 
         private void SetPiecePosition(IPiece piece, Point to)
         {
-            var occupiedPiece = GetPiece(to);
+            var occupiedPiece = GetTryPiece(to);
 
             occupiedPiece?.Kill();
 
