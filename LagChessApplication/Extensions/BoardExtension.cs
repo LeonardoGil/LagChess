@@ -1,5 +1,4 @@
-﻿using LagChessApplication.Domains;
-using LagChessApplication.Domains.Enums;
+﻿using LagChessApplication.Domains.Enums;
 using LagChessApplication.Domains.Pieces;
 using LagChessApplication.Interfaces;
 using System.Drawing;
@@ -8,13 +7,6 @@ namespace LagChessApplication.Extensions
 {
     public static class BoardExtension
     {
-        public static Board Create(string white = "white", string black = "black") => new()
-        {
-            White = PlayerExtension.CreateWhite(white),
-            Black = PlayerExtension.CreateBlack(black)
-        };
-
-
         public static bool IsInBoard(Point position) => IsInBoard(position.X, position.Y);
         public static bool IsInBoard(int x, int y) => x is >= 1 and <= 8 && y is >= 1 and <= 8;
 
