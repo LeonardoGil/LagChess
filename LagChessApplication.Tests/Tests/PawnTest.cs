@@ -45,7 +45,7 @@ namespace LagChessApplication.Tests.Tests
             gameChess.Play(Square.B2, Square.B3);
             gameChess.Play(Square.A7, Square.A6);
 
-            Assert.Throws<MoveInvalidException>(() => gameChess.Play(Square.B3, Square.C4));
+            Assert.Throws<InvalidMoveException>(() => gameChess.Play(Square.B3, Square.C4));
         }
 
         [Fact]

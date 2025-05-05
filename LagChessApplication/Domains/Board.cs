@@ -52,16 +52,16 @@ namespace LagChessApplication.Domains
             var piece = GetPiece(from);
 
             if (!piece.IsValidMove(to))
-                throw MoveInvalidException.Create(piece, to);
+                throw InvalidMoveException.Create(piece, to);
 
             if (IsPawnMovingDiagonallyInvalid(piece, to))
-                throw MoveInvalidException.Create(piece, to);
+                throw InvalidMoveException.Create(piece, to);
 
             if (!IsPathClear(piece, to))
-                throw MoveInvalidException.Create(piece, to);
+                throw InvalidMoveException.Create(piece, to);
 
             if (!CanPlacePiece(piece, to))
-                throw MoveInvalidException.Create(piece, to);
+                throw InvalidMoveException.Create(piece, to);
 
             try
             {

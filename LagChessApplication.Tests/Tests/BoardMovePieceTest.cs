@@ -40,11 +40,11 @@ namespace LagChessApplication.Tests.Tests
         {
             var gameChess = GameChessExtension.Create();
 
-            Assert.Throws<MoveInvalidException>(() => gameChess.Play(Square.A2, Square.A1));
-            Assert.Throws<MoveInvalidException>(() => gameChess.Play(Square.A1, Square.C3));
-            Assert.Throws<MoveInvalidException>(() => gameChess.Play(Square.B1, Square.B5));
-            Assert.Throws<MoveInvalidException>(() => gameChess.Play(Square.D1, Square.F1));
-            Assert.Throws<MoveInvalidException>(() => gameChess.Play(Square.E1, Square.E3));
+            Assert.Throws<InvalidMoveException>(() => gameChess.Play(Square.A2, Square.A1));
+            Assert.Throws<InvalidMoveException>(() => gameChess.Play(Square.A1, Square.C3));
+            Assert.Throws<InvalidMoveException>(() => gameChess.Play(Square.B1, Square.B5));
+            Assert.Throws<InvalidMoveException>(() => gameChess.Play(Square.D1, Square.F1));
+            Assert.Throws<InvalidMoveException>(() => gameChess.Play(Square.E1, Square.E3));
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace LagChessApplication.Tests.Tests
             gameChess.Play(Square.G1, Square.H3);
             gameChess.Play(Square.C8, Square.H3);
 
-            Assert.Throws<MoveInvalidException>(() => gameChess.Play(Square.F1, Square.H3));
+            Assert.Throws<InvalidMoveException>(() => gameChess.Play(Square.F1, Square.H3));
         }
     }
 }
