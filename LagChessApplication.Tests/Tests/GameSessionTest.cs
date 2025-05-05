@@ -19,24 +19,24 @@ namespace LagChessApplication.Tests.Tests
 
             // Turn 2
 
-            Assert.Equal(gameChess.Turn, 2);
-            Assert.Equal(gameChess.TurnPlayer, PieceColorEnum.White);
+            Assert.Equal(2, gameChess.Turn);
+            Assert.Equal(PieceColorEnum.White, gameChess.TurnPlayer);
 
             gameChess.Play(Square.G1, Square.H3);
             gameChess.Play(Square.C8, Square.H3);
 
             // Turn 3
 
-            Assert.Equal(gameChess.Turn, 3);
+            Assert.Equal(3, gameChess.Turn);
 
             gameChess.Play(Square.B1, Square.A3);
             
-            Assert.Equal(gameChess.TurnPlayer, PieceColorEnum.Black);
+            Assert.Equal(PieceColorEnum.Black, gameChess.TurnPlayer);
             
             gameChess.Play(Square.D6, Square.D5);
 
             // Turn 4
-            Assert.Equal(gameChess.Turn, 4);
+            Assert.Equal(4, gameChess.Turn);
         }
 
         [Fact]
