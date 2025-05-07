@@ -3,11 +3,11 @@ using LagChessApplication.Exceptions;
 using LagChessApplication.Interfaces;
 using System.Drawing;
 
-namespace LagChessApplication.Domains
+namespace LagChessApplication.Domains.Chess
 {
-    public class GameChess
+    public class ChessGame
     {
-        public GameChess(Player white, Player black)
+        public ChessGame(Player white, Player black)
         {
             ArgumentNullException.ThrowIfNull(white);
             ArgumentNullException.ThrowIfNull(black);
@@ -15,8 +15,8 @@ namespace LagChessApplication.Domains
             White = white;
             Black = black;
 
-            IPiece[] pieces = [..White.Pieces, ..Black.Pieces];
-            
+            IPiece[] pieces = [.. White.Pieces, .. Black.Pieces];
+
             Board = new(pieces);
         }
 
