@@ -185,7 +185,11 @@ namespace LagChessApplication.Domains
         {
             var occupiedPiece = GetTryPiece(to);
 
-            occupiedPiece?.Kill();
+            if (occupiedPiece is not null)
+            {
+                occupiedPiece.Kill();
+                _capturedPiece = true;
+            }
 
             piece.Move(to);
 
