@@ -1,4 +1,5 @@
-﻿using LagChessApplication.Domains.Enums;
+﻿using LagChessApplication.Domains.Chess;
+using LagChessApplication.Domains.Enums;
 using LagChessApplication.Domains.Pieces;
 using LagChessApplication.Exceptions;
 using LagChessApplication.Extensions;
@@ -22,6 +23,7 @@ namespace LagChessApplication.Domains
 
         public event Func<PieceTypeEnum>? OnPawnPromotion;
 
+        private bool _capturedPiece;
         private PieceTypeEnum? _pawnPromotion;
 
         public IPiece[] Pieces { get; }
@@ -45,9 +47,9 @@ namespace LagChessApplication.Domains
         public IPiece GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from) ?? throw PieceNotFoundException.Create(from);
         public IPiece? GetTryPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
 
-        public void MovePiece(Square from, Square to) => MovePiece(from.Point, to.Point);
+        public ChessMove MovePiece(Square from, Square to) => MovePiece(from.Point, to.Point);
 
-        public void MovePiece(Point from, Point to)
+        public ChessMove MovePiece(Point from, Point to)
         {
             var piece = GetPiece(from);
 
@@ -74,6 +76,8 @@ namespace LagChessApplication.Domains
                 CheckIfMoveResultsInCheck(from, to);
 
                 SetPiecePosition(piece, to);
+
+                return ChessMove.Create(from, to, piece.Type, _capturedPiece, _pawnPromotion);
             }
             catch (Exception)
             {
@@ -81,7 +85,8 @@ namespace LagChessApplication.Domains
             }
             finally
             {
-                _pawnPromotion = null;
+                _pawnPromotion = default;
+                _capturedPiece = default;
             }
         }
 

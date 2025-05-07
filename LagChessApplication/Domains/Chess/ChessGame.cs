@@ -18,11 +18,14 @@ namespace LagChessApplication.Domains.Chess
             IPiece[] pieces = [.. White.Pieces, .. Black.Pieces];
 
             Board = new(pieces);
+            History = new();
         }
 
         public Board Board { get; init; }
         public Player White { get; init; }
         public Player Black { get; init; }
+
+        public ChessHistory History { get; private set; }
 
         public int Turn { get; private set; } = 1;
         public PieceColorEnum TurnPlayer { get; private set; }
@@ -32,7 +35,9 @@ namespace LagChessApplication.Domains.Chess
             if (!IsMoveFromCurrentPlayer(from))
                 throw InvalidPieceOwnershipException.Create(Board.GetPiece(from), TurnPlayer);
 
-            Board.MovePiece(from, to);
+            var move = Board.MovePiece(from, to);
+
+            History.Add(move);
 
             NextTurn();
         }
