@@ -4,6 +4,8 @@
     {
         private readonly Stack<ChessMove> _moves = new();
 
+        public ChessMove[] Get() => [.. _moves];
+
         public void Add(ChessMove move) => _moves.Push(move);
         public void Undo() => _moves.Pop();
     }

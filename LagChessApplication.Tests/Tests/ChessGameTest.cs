@@ -9,6 +9,46 @@ namespace LagChessApplication.Tests.Tests
     public class ChessGameTest
     {
         [Fact]
+        public void ChessHistory_ShouldFillHistoryAccurately_WhenGameIsInProgress()
+        {
+            var chessGame = GameChessExtension.Create();
+
+            chessGame.Board.OnPawnPromotion += () => PieceTypeEnum.Queen;
+
+            chessGame.Play(Square.B2, Square.B4);
+
+            var actualMove = chessGame.History.Get().First();
+
+            Assert.Equal(PieceTypeEnum.Pawn, actualMove.Piece);
+            
+            Assert.False(actualMove.CapturedPiece);
+            
+            Assert.Null(actualMove.PawnPromotion);
+
+            chessGame.Play(Square.C7, Square.C5);
+
+            chessGame.Play(Square.B4, Square.C5); 
+
+            chessGame.Play(Square.B7, Square.B6);
+
+            chessGame.Play(Square.C5, Square.B6); 
+
+            chessGame.Play(Square.C8, Square.A6);
+
+            chessGame.Play(Square.B6, Square.B7);
+
+            chessGame.Play(Square.D7, Square.D6);
+
+            chessGame.Play(Square.B7, Square.A8);
+
+            actualMove = chessGame.History.Get().First();
+
+            Assert.Equal(PieceTypeEnum.Queen, actualMove.PawnPromotion);
+
+            Assert.True(actualMove.CapturedPiece);
+        }
+
+        [Fact]
         public void TurnManager_ShouldCalculateTurnNumberAndPlayerTurn_WhenGameIsInProgress()
         {
             var chessGame = GameChessExtension.Create();
