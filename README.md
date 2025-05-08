@@ -1,22 +1,40 @@
 # LagChess
 
-![Badge em Desenvolvimento](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+![Última versão](https://img.shields.io/github/v/tag/LeonardoGil/LagChess?color=blue)
 
-## Descrição
+## 🧠 Descrição
 
-O **LagChess** é uma biblioteca desenvolvida em C# que implementa a lógica de um jogo de xadrez. Ela permite a criação, manipulação e validação de movimentos das peças, servindo como base para aplicações que necessitam de funcionalidades relacionadas ao xadrez.
+**LagChess** é uma biblioteca escrita em C# que implementa a lógica fundamental de um jogo de xadrez. Seu objetivo é oferecer uma base robusta e reutilizável para aplicações que necessitam de regras oficiais de xadrez, incluindo movimentações válidas, situações de xeque e promoção de peças.
 
-## Status do Projeto
+Ideal para jogos, motores de IA ou validação de partidas, o LagChess abstrai a complexidade do jogo, permitindo que desenvolvedores foquem na interface ou lógica de alto nível.
 
-🚧 Em desenvolvimento 🚧
+## 🚧 Status do Projeto
 
-## Funcionalidades
+O projeto está em constante desenvolvimento. Algumas funcionalidades essenciais já foram implementadas, enquanto outras ainda estão em construção.
 
-- [x] Inicialização de um tabuleiro padrão ou personalizado
-- [x] Movimentação das peças
-- [x] Identificação de Xeque
-- [ ] Xeque-mate
-- [x] Upgrade de Peões
-- [ ] Roque
-- [ ] Anpassant
-- [ ] Historico de jogadas
+## 🎯 Funcionalidades
+
+- ✅ Inicialização de tabuleiro padrão
+- ✅ Movimentação legal das peças  
+- ✅ Detecção de xeque  
+- ✅ Promoção de peões  
+- ✅ Histórico de jogadas 
+- ⬜ Xeque-mate (em desenvolvimento)  
+- ⬜ Roque (em desenvolvimento)  
+- ⬜ En passant (em desenvolvimento)  
+
+## 📦 Tecnologias Utilizadas
+
+- .NET 8
+- C# 12
+- xUnit
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues, sugerir melhorias ou enviar pull requests.
+
+## 📄 Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
+
