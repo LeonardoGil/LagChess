@@ -25,6 +25,8 @@ namespace LagChessApplication.Tests.Tests
             
             Assert.Null(actualMove.PawnPromotion);
 
+            Assert.Equal("b4", actualMove.Notation);
+
             chessGame.Play(Square.C7, Square.C5);
 
             chessGame.Play(Square.B4, Square.C5); 
@@ -43,9 +45,13 @@ namespace LagChessApplication.Tests.Tests
 
             actualMove = chessGame.History.Get().First();
 
+            Assert.Equal(PieceTypeEnum.Pawn, actualMove.Piece);
+
             Assert.Equal(PieceTypeEnum.Queen, actualMove.PawnPromotion);
 
             Assert.True(actualMove.CapturedPiece);
+
+            Assert.Equal("bxa8=Q", actualMove.Notation);
         }
 
         [Fact]

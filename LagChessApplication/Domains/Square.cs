@@ -5,12 +5,21 @@ namespace LagChessApplication.Domains
 {
     public readonly struct Square
     {
-        public Point Point { get; }
+        public readonly Point Point { get; }
+
+        public readonly char Row
+        {
+            get => Point.Y.ToString()[0];
+        }
+        public readonly char Column 
+        {
+            get => _valuesX[Point.X - 1];
+        }
 
         private static readonly char[] _valuesX = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
                                                    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
-        public override readonly string ToString() => $"{_valuesX[Point.X - 1]}{Point.Y}";
+        public override readonly string ToString() => $"{Column}{Row}";
 
         public Square(Point position)
         {

@@ -1,4 +1,5 @@
 ﻿using LagChessApplication.Domains.Enums;
+using System.Text;
 
 namespace LagChessApplication.Domains.Chess
 {
@@ -15,8 +16,52 @@ namespace LagChessApplication.Domains.Chess
         { 
             get
             {
-                return string.Empty;
+                var notationBuilder = new StringBuilder();
+
+                var key = GetPieceKey(Piece);
+
+                if (key.HasValue)
+                {
+                    notationBuilder.Append(key);
+                }
+
+                if (CapturedPiece)
+                {
+                    if (Piece == PieceTypeEnum.Pawn)
+                    {
+                        notationBuilder.Append(from.Column);
+                    }
+
+                    notationBuilder.Append('x');
+                }
+
+                notationBuilder.Append(To.ToString());
+
+                if (PawnPromotion.HasValue)
+                {
+                    var promotionKey = GetPieceKey(PawnPromotion.Value);
+
+                    notationBuilder.Append('=');
+                    notationBuilder.Append(promotionKey);
+                }
+
+                return notationBuilder.ToString();
             }
+        }
+
+        private static char? GetPieceKey(PieceTypeEnum pieceType)
+        {
+            return pieceType switch
+            {
+                PieceTypeEnum.Pawn => null,
+                PieceTypeEnum.Knight => 'N',
+                PieceTypeEnum.Bishop => 'B',
+                PieceTypeEnum.Rook => 'R',
+                PieceTypeEnum.Queen => 'Q',
+                PieceTypeEnum.King => 'K',
+
+                _ => throw new NotImplementedException()
+            };
         }
 
         public static ChessMove Create(Square from, Square to, PieceTypeEnum piece, bool capturedPiece, PieceTypeEnum? pawnPromotion) => new(from, to, piece, capturedPiece, pawnPromotion);
