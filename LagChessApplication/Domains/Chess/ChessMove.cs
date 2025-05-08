@@ -29,7 +29,7 @@ namespace LagChessApplication.Domains.Chess
                 {
                     if (Piece == PieceTypeEnum.Pawn)
                     {
-                        notationBuilder.Append(from.Column);
+                        notationBuilder.Append(From.Column);
                     }
 
                     notationBuilder.Append('x');
