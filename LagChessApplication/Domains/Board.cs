@@ -107,25 +107,17 @@ namespace LagChessApplication.Domains
 
             var opponentColor = piece.Color == PieceColorEnum.White ? PieceColorEnum.Black : PieceColorEnum.White;
 
-            var king = Pieces.First(x => x is King && x.Color == piece.Color);
+            var king = AvailablePieces.First(x => x is King && x.Color == piece.Color);
 
-            foreach (var opponentPiece in Pieces.Where(x => x.Color == opponentColor && !x.IsDead))
+            var opponentPieces = AvailablePieces.Where(x => x.Color == opponentColor);
+
+            foreach (var opponentPiece in opponentPieces)
             {
-                var possibleMoves = opponentPiece.GetPossibleMoves(opponentPiece.MoveStyle).Any(point => point == king.Position);
+                var possibleMoves = opponentPiece.GetPossibleMovesAndAttacks(opponentPiece.MoveStyle).Any(point => point == king.Position);
 
                 if (possibleMoves && simulatedBoard.IsPathClear(opponentPiece, king.Position))
                 {
                     throw KingInCheckException.Create(piece, to);
-                }
-
-                if (opponentPiece is Pawn)
-                {
-                    var direction = piece.Color == PieceColorEnum.White ? 1 : -1;
-
-                    if ((king.Position.X == opponentPiece.Position.X - 1 || king.Position.X == opponentPiece.Position.X + 1) && king.Position.Y == opponentPiece.Position.Y + direction)
-                    {
-                        throw KingInCheckException.Create(piece, to);
-                    }
                 }
             }
         }

@@ -101,6 +101,25 @@ namespace LagChessApplication.Extensions
                     throw new NotImplementedException();
             }
         }
+        public static Point[] GetPossibleMovesAndAttacks(this IPiece piece, PieceMoveStyleEnum moveStyle)
+        {
+            var moves = GetPossibleMoves(piece, moveStyle);
+
+            if (piece is Pawn)
+            {
+                var direction = piece.Color == PieceColorEnum.White ? 1 : -1;
+
+                var attacks = new Point[2]
+                {
+                    new(piece.Position.X - 1, piece.Position.Y + direction),
+                    new(piece.Position.X + 1, piece.Position.Y + direction)
+                };
+
+                moves = moves.Union(attacks).ToArray();
+            }
+
+            return moves;
+        }
 
         public static Type GetType(PieceTypeEnum type)
         {
@@ -112,7 +131,7 @@ namespace LagChessApplication.Extensions
                 PieceTypeEnum.Bishop => typeof(Bishop),
                 PieceTypeEnum.Queen => typeof(Queen),
                 PieceTypeEnum.King => typeof(King),
-                
+
                 _ => throw new ArgumentOutOfRangeException(nameof(type), $"Unexpected piece type: {type}")
             };
         }
