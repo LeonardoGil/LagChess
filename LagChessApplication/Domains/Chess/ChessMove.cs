@@ -3,17 +3,18 @@ using System.Text;
 
 namespace LagChessApplication.Domains.Chess
 {
-    public readonly struct ChessMove(Square from, Square to, PieceTypeEnum piece, bool capturedPiece, PieceTypeEnum? pawnPromotion)
+    public readonly struct ChessMove(Square from, Square to, PieceTypeEnum piece, bool opponentKingInCheck, bool capturedPiece, PieceTypeEnum? pawnPromotion)
     {
         public readonly Square From { get; } = from;
         public readonly Square To { get; } = to;
         public readonly PieceTypeEnum Piece { get; } = piece;
 
+        public readonly bool OpponentKingInCheck { get; } = opponentKingInCheck;
         public readonly bool CapturedPiece { get; } = capturedPiece;
         public readonly PieceTypeEnum? PawnPromotion { get; } = pawnPromotion;
 
-        public string Notation 
-        { 
+        public string Notation
+        {
             get
             {
                 var notationBuilder = new StringBuilder();
@@ -45,6 +46,11 @@ namespace LagChessApplication.Domains.Chess
                     notationBuilder.Append(promotionKey);
                 }
 
+                if (OpponentKingInCheck)
+                {
+                    notationBuilder.Append('+');
+                }
+
                 return notationBuilder.ToString();
             }
         }
@@ -64,6 +70,6 @@ namespace LagChessApplication.Domains.Chess
             };
         }
 
-        public static ChessMove Create(Square from, Square to, PieceTypeEnum piece, bool capturedPiece, PieceTypeEnum? pawnPromotion) => new(from, to, piece, capturedPiece, pawnPromotion);
+        public static ChessMove Create(Square from, Square to, PieceTypeEnum piece, bool opponentKingInCheck, bool capturedPiece, PieceTypeEnum? pawnPromotion) => new(from, to, piece, opponentKingInCheck, capturedPiece, pawnPromotion);
     }
 }
