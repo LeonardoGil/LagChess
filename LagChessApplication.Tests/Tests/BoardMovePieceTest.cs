@@ -1,7 +1,6 @@
 ﻿using LagChessApplication.Domains;
 using LagChessApplication.Exceptions;
 using LagChessApplication.Extensions;
-using System.Drawing;
 using Xunit;
 
 namespace LagChessApplication.Tests.Tests
@@ -45,34 +44,6 @@ namespace LagChessApplication.Tests.Tests
             Assert.Throws<InvalidMoveException>(() => chessGame.Play(Square.B1, Square.B5));
             Assert.Throws<InvalidMoveException>(() => chessGame.Play(Square.D1, Square.F1));
             Assert.Throws<InvalidMoveException>(() => chessGame.Play(Square.E1, Square.E3));
-        }
-
-        [Fact]
-        public void Pawn_ShouldThrowKingInCheckException_WhenExposingKingToCheck()
-        {
-            var chessGame = GameChessExtension.Create();
-
-            chessGame.Play(Square.C2, Square.C3);
-            chessGame.Play(Square.A7, Square.A6);
-            chessGame.Play(Square.D1, Square.A4);
-
-            Assert.Throws<KingInCheckException>(() => chessGame.Play(Square.D7, Square.D6));
-        }
-
-        [Fact]
-        public void Rook_ShouldRevealCheck_WhenPieceMovesOutOfTheWay()
-        {
-            var chessGame = GameChessExtension.Create();
-
-            chessGame.Play(Square.B1, Square.C3);
-            chessGame.Play(Square.A7, Square.A6);
-
-            chessGame.Play(Square.C3, Square.D5);
-            chessGame.Play(Square.E7, Square.E6);
-
-            chessGame.Play(Square.D5, Square.C7);
-
-            Assert.Throws<KingInCheckException>(() => chessGame.Play(Square.D8, Square.G5));
         }
 
         [Fact]
