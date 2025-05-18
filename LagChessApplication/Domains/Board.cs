@@ -73,11 +73,22 @@ namespace LagChessApplication.Domains
                     _pawnPromotion = OnPawnPromotion.Invoke();
                 }
 
-                CheckIfMoveResultsInCheck(from, to);
+                var simulatedBoard = SimulatedBoard.CreateClone(this);
+
+                var simulatedPiece = simulatedBoard.GetPiece(from);
+
+                simulatedBoard.SetPiecePosition(simulatedPiece, to);
+
+                if (MovePutsOwnKingInCheck(simulatedBoard, simulatedPiece))
+                {
+                    throw KingInCheckException.Create(piece, to);
+                }
 
                 SetPiecePosition(piece, to);
 
-                return ChessMove.Create(from, to, piece.Type, _capturedPiece, _pawnPromotion);
+                var opponentKingIsCheck = MovePutsOpponentKingInCheck(this, piece);
+
+                return ChessMove.Create(from, to, piece.Type, opponentKingIsCheck, _capturedPiece, _pawnPromotion);
             }
             catch (Exception)
             {
@@ -97,37 +108,26 @@ namespace LagChessApplication.Domains
             return occupiedPiece is null || occupiedPiece.Color != piece.Color;
         }
 
-        private void CheckIfMoveResultsInCheck(Point from, Point to)
+        private bool MovePutsOwnKingInCheck(Board board, IPiece piece)
         {
-            var simulatedBoard = SimulatedBoard.CreateClone(this);
-
-            var piece = simulatedBoard.GetPiece(from);
-
-            simulatedBoard.SetPiecePosition(piece, to);
-
             var opponentColor = piece.Color == PieceColorEnum.White ? PieceColorEnum.Black : PieceColorEnum.White;
 
-            var king = Pieces.First(x => x is King && x.Color == piece.Color);
+            var king = AvailablePieces.First(x => x is King && x.Color == piece.Color);
 
-            foreach (var opponentPiece in Pieces.Where(x => x.Color == opponentColor && !x.IsDead))
-            {
-                var possibleMoves = opponentPiece.GetPossibleMoves(opponentPiece.MoveStyle).Any(point => point == king.Position);
+            var opponentPieces = AvailablePieces.Where(x => x.Color == opponentColor);
 
-                if (possibleMoves && simulatedBoard.IsPathClear(opponentPiece, king.Position))
-                {
-                    throw KingInCheckException.Create(piece, to);
-                }
+            return opponentPieces.Any(opponentPiece => opponentPiece.GetPossibleMovesAndAttacks(opponentPiece.MoveStyle).Any(point => point == king.Position) && board.IsPathClear(opponentPiece, king.Position));
+        }
 
-                if (opponentPiece is Pawn)
-                {
-                    var direction = piece.Color == PieceColorEnum.White ? 1 : -1;
+        private bool MovePutsOpponentKingInCheck(Board board, IPiece piece)
+        {
+            var opponentColor = piece.Color == PieceColorEnum.White ? PieceColorEnum.Black : PieceColorEnum.White;
 
-                    if ((king.Position.X == opponentPiece.Position.X - 1 || king.Position.X == opponentPiece.Position.X + 1) && king.Position.Y == opponentPiece.Position.Y + direction)
-                    {
-                        throw KingInCheckException.Create(piece, to);
-                    }
-                }
-            }
+            var opponentKing = AvailablePieces.First(x => x is King && x.Color == opponentColor);
+
+            var pieces = AvailablePieces.Where(x => x.Color == piece.Color);
+
+            return pieces.Any(x => x.GetPossibleMovesAndAttacks(x.MoveStyle).Any(point => point == opponentKing.Position) && board.IsPathClear(x, opponentKing.Position));
         }
 
         private bool IsOccupied(Point point) => GetTryPiece(point) is not null;

@@ -30,7 +30,7 @@ namespace LagChessApplication.Domains.Chess
         public int Turn { get; private set; } = 1;
         public PieceColorEnum TurnPlayer { get; private set; }
 
-        public void Play(Point from, Point to)
+        public ChessMove Play(Point from, Point to)
         {
             if (!IsMoveFromCurrentPlayer(from))
                 throw InvalidPieceOwnershipException.Create(Board.GetPiece(from), TurnPlayer);
@@ -40,6 +40,8 @@ namespace LagChessApplication.Domains.Chess
             History.Add(move);
 
             NextTurn();
+
+            return move;
         }
 
         private void NextTurn()
