@@ -88,6 +88,12 @@ namespace LagChessApplication.Domains
 
                 var opponentKingIsCheck = MovePutsOpponentKingInCheck(this, piece);
 
+                if (opponentKingIsCheck)
+                {
+                    // TO DO
+                    MovePutsOpponentKingInCheckmate(simulatedBoard, simulatedPiece);
+                }
+
                 return ChessMove.Create(from, to, piece.Type, opponentKingIsCheck, _capturedPiece, _pawnPromotion);
             }
             catch (Exception)
@@ -116,7 +122,75 @@ namespace LagChessApplication.Domains
 
             var opponentPieces = AvailablePieces.Where(x => x.Color == opponentColor);
 
-            return opponentPieces.Any(opponentPiece => opponentPiece.GetPossibleMovesAndAttacks(opponentPiece.MoveStyle).Any(point => point == king.Position) && board.IsPathClear(opponentPiece, king.Position));
+            return opponentPieces.Any(opponentPiece => opponentPiece.GetPossibleMovesAndAttacks().Any(point => point == king.Position) && board.IsPathClear(opponentPiece, king.Position));
+        }
+
+        private bool MovePutsOpponentKingInCheckmate(Board board, IPiece piece)
+        {
+            var opponentColor = piece.Color == PieceColorEnum.White ? PieceColorEnum.Black : PieceColorEnum.White;
+
+            var opponentKing = board.AvailablePieces.First(x => x is King && x.Color == opponentColor);
+
+            if (HasAnyLegalMoveToEscapeCheck(board, opponentKing) || CanAnyPieceCaptureThreat(board, opponentKing))
+                return false;
+
+            //TO DO
+            return default; 
+        }
+
+        private bool CanAnyPieceCaptureThreat(Board board, IPiece king)
+        {
+            var opponentPieces = board.AvailablePieces.Where(x => x.Color != king.Color);
+
+            var opponentPiecesAttack = opponentPieces.Select(piece => new
+            {
+                Attacks = piece.GetPossibleMovesAndAttacks(),
+                Piece = piece
+            })
+            .Where(obj => obj.Attacks.Any(point => point == king.Position) && board.IsPathClear(obj.Piece, king.Position));
+
+            var pieces = board.AvailablePieces.Where(x => x.Color == king.Color);
+
+            var piecesAttack = pieces.Select(piece => new
+            {
+                Attacks = piece.GetPossibleMovesAndAttacks(),
+                Piece = piece
+            });
+
+            return opponentPiecesAttack.All(opponentPieceAttack =>
+            {
+                var possibleMovesAttack = piecesAttack.Where(pieceAttack => pieceAttack.Attacks.Any(point => point == opponentPieceAttack.Piece.Position) && board.IsPathClear(pieceAttack.Piece, pieceAttack.Piece.Position));
+
+                if (!possibleMovesAttack.Any())
+                    return false;
+
+                return possibleMovesAttack.Any(pieceAttack =>
+                {
+                    var simulatedBoard = SimulatedBoard.CreateClone(board);
+
+                    var simulatedPieceAttack = simulatedBoard.GetPiece(pieceAttack.Piece.Position);
+
+                    simulatedBoard.SetPiecePosition(simulatedPieceAttack, opponentPieceAttack.Piece.Position);
+
+                    return MovePutsOwnKingInCheck(simulatedBoard, pieceAttack.Piece);
+                });
+            });
+        }
+
+        private bool HasAnyLegalMoveToEscapeCheck(Board board, IPiece king)
+        {
+            var possibleMoves = king.GetPossibleMoves().Where(point => !IsOccupied(point)); // Incluir peças que o Rei para atacar
+
+            return possibleMoves.Any(move =>
+            {
+                var simulatedBoard = SimulatedBoard.CreateClone(board);
+
+                var simulatedKing = simulatedBoard.GetPiece(king.Position);
+
+                simulatedBoard.SetPiecePosition(simulatedKing, move);
+
+                return MovePutsOwnKingInCheck(simulatedBoard, simulatedKing);
+            });
         }
 
         private bool MovePutsOpponentKingInCheck(Board board, IPiece piece)
@@ -127,7 +201,7 @@ namespace LagChessApplication.Domains
 
             var pieces = AvailablePieces.Where(x => x.Color == piece.Color);
 
-            return pieces.Any(x => x.GetPossibleMovesAndAttacks(x.MoveStyle).Any(point => point == opponentKing.Position) && board.IsPathClear(x, opponentKing.Position));
+            return pieces.Any(x => x.GetPossibleMovesAndAttacks().Any(point => point == opponentKing.Position) && board.IsPathClear(x, opponentKing.Position));
         }
 
         private bool IsOccupied(Point point) => GetTryPiece(point) is not null;
