@@ -11,6 +11,8 @@ namespace LagChessApplication.Extensions
         public static T CreatePieceWhite<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.White) as T ?? throw new Exception($"Failed to cast piece of type '{typeof(T).Name}'.");
         public static T CreatePieceBlack<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.Black) as T ?? throw new Exception($"Failed to cast piece of type '{typeof(T).Name}'.");
 
+
+        public static Point[] GetPossibleMoves(this IPiece piece) => GetPossibleMoves(piece, piece.MoveStyle);
         public static Point[] GetPossibleMoves(this IPiece piece, PieceMoveStyleEnum moveStyle)
         {
             switch (moveStyle)
@@ -101,9 +103,13 @@ namespace LagChessApplication.Extensions
                     throw new NotImplementedException();
             }
         }
-        public static Point[] GetPossibleMovesAndAttacks(this IPiece piece, PieceMoveStyleEnum moveStyle)
+
+        public static Point[] GetPossibleMovesAndAttacks(this IPiece piece, PieceMoveStyleEnum? moveStyle = null)
         {
-            var moves = GetPossibleMoves(piece, moveStyle);
+            if (!moveStyle.HasValue)
+                moveStyle = piece.MoveStyle;
+
+            var moves = GetPossibleMoves(piece, moveStyle.Value);
 
             if (piece is Pawn)
             {
