@@ -7,9 +7,10 @@ namespace LagChessForm.Forms.Controls
 {
     public partial class BoardControl : UserControl
     {
-        private readonly ICollection<SquareBoardControl> Squares = [];
-        
-        public Board Board { get; private set; }
+        private readonly ICollection<SquareBoardControl> _squares = [];
+        private ChessGame? _chessGame;
+
+        public Board Board { get => _chessGame?.Board ?? throw new ArgumentNullException(); }
 
         public BoardControl()
         {
@@ -18,9 +19,9 @@ namespace LagChessForm.Forms.Controls
             LoadSquares();
         }
 
-        internal void Init(Board board)
+        internal void Init(ChessGame chessGame)
         {
-            Board = board;
+            _chessGame = chessGame;
 
             Refresh();
         }
@@ -31,7 +32,7 @@ namespace LagChessForm.Forms.Controls
             {
                 foreach (var piece in Board.AvailablePieces)
                 {
-                    var square = Squares.First(square => square.Point == piece.Position);
+                    var square = _squares.First(square => square.Point == piece.Position);
                     square.Piece = piece;
                 }
             }
@@ -39,7 +40,7 @@ namespace LagChessForm.Forms.Controls
             {
                 foreach (var point in points)
                 {
-                    var square = Squares.First(square => square.Point == point);
+                    var square = _squares.First(square => square.Point == point);
                     square.Piece = square.Piece;
                 }
             }
@@ -56,16 +57,32 @@ namespace LagChessForm.Forms.Controls
             for (int x = 1; x <= positionX; x++)
                 for (int y = 1; y <= positionY; y++)
                 {
-                    var control = new SquareBoardControl(new Point(x, y))
+                    var control = new SquareBoardControl(CanMovePiece, new Point(x, y))
                     {
                         Size = new Size(width, height),
                         Location = new Point(width * (x - 1), height * (positionY - y))
                     };
 
-                    Squares.Add(control);
+                    _squares.Add(control);
                 }
 
-            Controls.AddRange(Squares.ToArray());
+            Controls.AddRange(_squares.ToArray());
+        }
+
+        private bool CanMovePiece(Point from, Point to)
+        {
+            ArgumentNullException.ThrowIfNull(_chessGame);
+
+            try
+            {
+                var result = _chessGame.Play(from, to);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

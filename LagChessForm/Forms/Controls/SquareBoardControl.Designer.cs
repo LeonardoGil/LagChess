@@ -28,35 +28,37 @@
         /// </summary>
         private void InitializeComponent()
         {
-            piecePictureBox = new PictureBox();
-            ((System.ComponentModel.ISupportInitialize)piecePictureBox).BeginInit();
+            PiecePictureBox = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)PiecePictureBox).BeginInit();
             SuspendLayout();
             // 
-            // piecePictureBox
+            // PiecePictureBox
             // 
-            piecePictureBox.BackColor = Color.Transparent;
-            piecePictureBox.Dock = DockStyle.Fill;
-            piecePictureBox.Location = new Point(0, 0);
-            piecePictureBox.Name = "piecePictureBox";
-            piecePictureBox.Size = new Size(75, 75);
-            piecePictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
-            piecePictureBox.TabIndex = 0;
-            piecePictureBox.TabStop = false;
+            PiecePictureBox.BackColor = Color.Transparent;
+            PiecePictureBox.Dock = DockStyle.Fill;
+            PiecePictureBox.Location = new Point(0, 0);
+            PiecePictureBox.Name = "PiecePictureBox";
+            PiecePictureBox.Size = new Size(75, 75);
+            PiecePictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            PiecePictureBox.TabIndex = 0;
+            PiecePictureBox.TabStop = false;
             // 
             // SquareBoardControl
             // 
+            AllowDrop = true;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(piecePictureBox);
+            Controls.Add(PiecePictureBox);
             Margin = new Padding(0);
             Name = "SquareBoardControl";
             Size = new Size(75, 75);
-            ((System.ComponentModel.ISupportInitialize)piecePictureBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)PiecePictureBox).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
 
+        public PictureBox PiecePictureBox;
         private PictureBox piecePictureBox;
     }
 }

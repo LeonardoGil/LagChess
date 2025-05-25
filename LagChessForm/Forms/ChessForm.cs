@@ -16,7 +16,7 @@ namespace LagChessForm
         {
             ChessGame = ChessGameExtension.Create();
 
-            BoardControl.Init(ChessGame.Board);
+            BoardControl.Init(ChessGame);
         }
 
         private void ButtonIniciar_Click(object sender, EventArgs e) => Start();
