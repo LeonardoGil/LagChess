@@ -10,7 +10,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void Check_ShouldThrowKingInCheckException_WhenExposingKingToCheck()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.C2, Square.C3);
             chessGame.Play(Square.A7, Square.A6);
@@ -22,7 +22,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void Check_ShouldThrowKingInCheckException_WhenTryingToMovePieceWhileKingIsInCheck()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.B1, Square.C3);
             chessGame.Play(Square.A7, Square.A6);
@@ -38,7 +38,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void Check_ShouldReturnTrue_WhenOpponentKingIsInCheck()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.F2, Square.F3);
             chessGame.Play(Square.E7, Square.E5);

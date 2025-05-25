@@ -11,7 +11,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void Pawn_ShouldBePromoted_WhenArrivingAtPromotionRow()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Board.OnPawnPromotion += () => PieceTypeEnum.Queen;
 
@@ -40,7 +40,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void Pawn_ShouldThrowException_WhenMovingDiagonallyWithoutCapture()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.B2, Square.B3);
             chessGame.Play(Square.A7, Square.A6);
@@ -51,7 +51,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void Pawn_ShouldAllowDiagonalMove_WhenCapturing()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.B2, Square.B3);
             chessGame.Play(Square.A7, Square.A6);
