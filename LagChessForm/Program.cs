@@ -1,7 +1,11 @@
+using LagChessForm.Themes;
+
 namespace LagChessForm
 {
     internal static class Program
     {
+        internal static Theme Theme = new();
+
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>

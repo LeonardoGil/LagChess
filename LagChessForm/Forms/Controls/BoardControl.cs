@@ -1,34 +1,40 @@
 ﻿using LagChessApplication.Domains;
 using LagChessApplication.Domains.Chess;
-using LagChessApplication.Interfaces;
-using System.Collections.ObjectModel;
 
 namespace LagChessForm.Forms.Controls
 {
     public partial class BoardControl : UserControl
     {
+
         private readonly ICollection<SquareBoardControl> _squares = [];
+
         private ChessGame? _chessGame;
 
-        public Board Board { get => _chessGame?.Board ?? throw new ArgumentNullException(); }
+        public Board? Board { get => _chessGame?.Board; }
+        public ChessGame? ChessGame
+        {
+            get => _chessGame;
+            set
+            {
+                _chessGame = value;
+                Refresh();
+            }
+        }
+
+        public EventHandler<EventArgs>? OnUpdateInfo;
 
         public BoardControl()
         {
             InitializeComponent();
 
-            LoadSquares();
+            RefreshSquares();
+
+            Resize += (_, _) => RefreshSquares();
         }
 
-        internal void Init(ChessGame chessGame)
-        {
-            _chessGame = chessGame;
+        private new void Refresh() => _squares.ToList().ForEach(square => square.Piece = Board?.GetTryPiece(square.Point));
 
-            Refresh();
-        }
-
-        private new void Refresh() => _squares.ToList().ForEach(square => square.Piece = Board.GetTryPiece(square.Point));
-
-        private void LoadSquares()
+        private void RefreshSquares()
         {
             var positionX = 8;
             var positionY = 8;
@@ -36,19 +42,32 @@ namespace LagChessForm.Forms.Controls
             var width = Width / positionX;
             var height = Height / positionY;
 
-            for (int x = 1; x <= positionX; x++)
-                for (int y = 1; y <= positionY; y++)
-                {
-                    var control = new SquareBoardControl(CanMovePiece, new Point(x, y))
+            Func<int, int, int, int, Point> calcLocation = (width, height, x, y) => new Point(width * (x - 1), height * (positionY - y));
+
+            if (_squares.Count == 0)
+            {
+                for (int x = 1; x <= positionX; x++)
+                    for (int y = 1; y <= positionY; y++)
                     {
-                        Size = new Size(width, height),
-                        Location = new Point(width * (x - 1), height * (positionY - y))
-                    };
+                        var control = new SquareBoardControl(CanMovePiece, new Point(x, y))
+                        {
+                            Size = new Size(width, height),
+                            Location = calcLocation.Invoke(width, height, x, y)
+                        };
 
-                    _squares.Add(control);
+                        _squares.Add(control);
+                    }
+
+                Controls.AddRange(_squares.ToArray());
+            }
+            else
+            {
+                foreach (var square in _squares)
+                {
+                    square.Size = new Size(width, height);
+                    square.Location = calcLocation.Invoke(width, height, square.Point.X, square.Point.Y);
                 }
-
-            Controls.AddRange(_squares.ToArray());
+            }
         }
 
         private bool CanMovePiece(Point from, Point to)
@@ -59,10 +78,14 @@ namespace LagChessForm.Forms.Controls
             {
                 var result = _chessGame.Play(from, to);
 
+                OnUpdateInfo?.Invoke(result, EventArgs.Empty);
+                
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                OnUpdateInfo?.Invoke(e, EventArgs.Empty);
+                
                 return false;
             }
         }

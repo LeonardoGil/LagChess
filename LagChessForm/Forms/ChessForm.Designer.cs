@@ -29,58 +29,105 @@
         private void InitializeComponent()
         {
             BoardControl = new Forms.Controls.BoardControl();
-            panel1 = new Panel();
-            PlayerLabel = new Label();
-            ButtonIniciar = new Button();
-            panel1.SuspendLayout();
+            panelInfo = new Panel();
+            flowLayoutPanelBlackPiecesDead = new FlowLayoutPanel();
+            labelPlayerBlack = new Label();
+            flowLayoutPanelWhitePiecesDead = new FlowLayoutPanel();
+            labelPlayerWhite = new Label();
+            buttonStart = new Button();
+            labelError = new Label();
+            panelInfo.SuspendLayout();
             SuspendLayout();
             // 
             // BoardControl
             // 
-            BoardControl.Location = new Point(12, 117);
+            BoardControl.ChessGame = null;
+            BoardControl.Location = new Point(12, 17);
             BoardControl.Name = "BoardControl";
-            BoardControl.Size = new Size(600, 600);
+            BoardControl.Size = new Size(700, 700);
             BoardControl.TabIndex = 0;
             // 
-            // panel1
+            // panelInfo
             // 
-            panel1.BackColor = SystemColors.ControlDark;
-            panel1.Controls.Add(PlayerLabel);
-            panel1.Location = new Point(618, 117);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(378, 600);
-            panel1.TabIndex = 1;
+            panelInfo.BackColor = Color.FromArgb(38, 36, 33);
+            panelInfo.BorderStyle = BorderStyle.FixedSingle;
+            panelInfo.Controls.Add(labelError);
+            panelInfo.Controls.Add(flowLayoutPanelBlackPiecesDead);
+            panelInfo.Controls.Add(labelPlayerBlack);
+            panelInfo.Controls.Add(flowLayoutPanelWhitePiecesDead);
+            panelInfo.Controls.Add(labelPlayerWhite);
+            panelInfo.Location = new Point(718, 53);
+            panelInfo.Name = "panelInfo";
+            panelInfo.Size = new Size(278, 664);
+            panelInfo.TabIndex = 1;
             // 
-            // PlayerLabel
+            // flowLayoutPanelBlackPiecesDead
             // 
-            PlayerLabel.AutoSize = true;
-            PlayerLabel.Location = new Point(24, 28);
-            PlayerLabel.Name = "PlayerLabel";
-            PlayerLabel.Size = new Size(56, 17);
-            PlayerLabel.TabIndex = 0;
-            PlayerLabel.Text = "Player: ";
+            flowLayoutPanelBlackPiecesDead.Location = new Point(10, 310);
+            flowLayoutPanelBlackPiecesDead.Margin = new Padding(10);
+            flowLayoutPanelBlackPiecesDead.Name = "flowLayoutPanelBlackPiecesDead";
+            flowLayoutPanelBlackPiecesDead.Size = new Size(256, 100);
+            flowLayoutPanelBlackPiecesDead.TabIndex = 3;
             // 
-            // ButtonIniciar
+            // labelPlayerBlack
             // 
-            ButtonIniciar.BackColor = SystemColors.ControlDark;
-            ButtonIniciar.FlatStyle = FlatStyle.Flat;
-            ButtonIniciar.Location = new Point(12, 12);
-            ButtonIniciar.Name = "ButtonIniciar";
-            ButtonIniciar.Size = new Size(70, 35);
-            ButtonIniciar.TabIndex = 2;
-            ButtonIniciar.Text = "Iniciar";
-            ButtonIniciar.UseVisualStyleBackColor = false;
-            ButtonIniciar.Click += ButtonIniciar_Click;
+            labelPlayerBlack.AutoSize = true;
+            labelPlayerBlack.Location = new Point(10, 283);
+            labelPlayerBlack.Name = "labelPlayerBlack";
+            labelPlayerBlack.Size = new Size(87, 17);
+            labelPlayerBlack.TabIndex = 2;
+            labelPlayerBlack.Text = "Black Player";
+            // 
+            // flowLayoutPanelWhitePiecesDead
+            // 
+            flowLayoutPanelWhitePiecesDead.Location = new Point(10, 173);
+            flowLayoutPanelWhitePiecesDead.Margin = new Padding(10);
+            flowLayoutPanelWhitePiecesDead.Name = "flowLayoutPanelWhitePiecesDead";
+            flowLayoutPanelWhitePiecesDead.Size = new Size(256, 100);
+            flowLayoutPanelWhitePiecesDead.TabIndex = 1;
+            // 
+            // labelPlayerWhite
+            // 
+            labelPlayerWhite.AutoSize = true;
+            labelPlayerWhite.Location = new Point(10, 146);
+            labelPlayerWhite.Name = "labelPlayerWhite";
+            labelPlayerWhite.Size = new Size(90, 17);
+            labelPlayerWhite.TabIndex = 0;
+            labelPlayerWhite.Text = "White Player";
+            // 
+            // buttonStart
+            // 
+            buttonStart.BackColor = Color.FromArgb(38, 36, 33);
+            buttonStart.FlatAppearance.BorderColor = Color.FromArgb(19, 18, 16);
+            buttonStart.FlatStyle = FlatStyle.Flat;
+            buttonStart.Location = new Point(926, 12);
+            buttonStart.Name = "buttonStart";
+            buttonStart.Size = new Size(70, 35);
+            buttonStart.TabIndex = 2;
+            buttonStart.Text = "Start";
+            buttonStart.UseMnemonic = false;
+            buttonStart.UseVisualStyleBackColor = false;
+            buttonStart.Click += ButtonIniciar_Click;
+            // 
+            // labelError
+            // 
+            labelError.AutoSize = true;
+            labelError.ForeColor = Color.Red;
+            labelError.Location = new Point(10, 632);
+            labelError.Name = "labelError";
+            labelError.Size = new Size(0, 17);
+            labelError.TabIndex = 4;
+            labelError.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // ChessForm
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            BackColor = SystemColors.ControlDarkDark;
+            BackColor = Color.FromArgb(49, 46, 43);
             ClientSize = new Size(1008, 729);
-            Controls.Add(ButtonIniciar);
-            Controls.Add(panel1);
+            Controls.Add(buttonStart);
+            Controls.Add(panelInfo);
             Controls.Add(BoardControl);
             Font = new Font("Cambria", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             ForeColor = SystemColors.HighlightText;
@@ -89,15 +136,19 @@
             Name = "ChessForm";
             ShowIcon = false;
             StartPosition = FormStartPosition.CenterScreen;
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
+            panelInfo.ResumeLayout(false);
+            panelInfo.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
-        private Panel panel1;
-        private Label PlayerLabel;
+        private Panel panelInfo;
+        private Label labelPlayerWhite;
         protected Forms.Controls.BoardControl BoardControl;
-        private Button ButtonIniciar;
+        private Button buttonStart;
+        private FlowLayoutPanel flowLayoutPanelWhitePiecesDead;
+        private FlowLayoutPanel flowLayoutPanelBlackPiecesDead;
+        private Label labelPlayerBlack;
+        private Label labelError;
     }
 }

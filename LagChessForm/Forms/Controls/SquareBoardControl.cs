@@ -1,5 +1,6 @@
 ﻿using LagChessApplication.Domains.Enums;
 using LagChessApplication.Interfaces;
+using LagChessForm.Extensions;
 using LagChessForm.Resources;
 
 namespace LagChessForm.Forms.Controls
@@ -49,21 +50,9 @@ namespace LagChessForm.Forms.Controls
             }
             else
             {
-                PiecePictureBox.Image = GetImage(_piece.Type, _piece.Color);
+                PiecePictureBox.Image = ResourceExtensions.GetPieceImage(_piece.Type, _piece.Color);
             }
         }
-
-        private static Bitmap GetImage(PieceTypeEnum type, PieceColorEnum color) => type switch
-        {
-            PieceTypeEnum.Pawn => color == PieceColorEnum.White ? PieceResource.WhitePawn : PieceResource.BlackPawn,
-            PieceTypeEnum.Rook => color == PieceColorEnum.White ? PieceResource.WhiteRook : PieceResource.BlackRook,
-            PieceTypeEnum.Knight => color == PieceColorEnum.White ? PieceResource.WhiteKnight : PieceResource.BlackKnight,
-            PieceTypeEnum.Bishop => color == PieceColorEnum.White ? PieceResource.WhiteBishop : PieceResource.BlackBishop,
-            PieceTypeEnum.Queen => color == PieceColorEnum.White ? PieceResource.WhiteQueen : PieceResource.BlackQueen,
-            PieceTypeEnum.King => color == PieceColorEnum.White ? PieceResource.WhiteKing : PieceResource.BlackKing,
-            
-            _ => throw new NotImplementedException(),
-        };
 
         private void PiecePictureBox_MouseDown(object? sender, MouseEventArgs e)
         {
