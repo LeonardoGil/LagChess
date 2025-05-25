@@ -1,6 +1,6 @@
 ﻿namespace LagChessForm
 {
-    partial class Board
+    partial class ChessForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -30,7 +30,7 @@
         {
             SuspendLayout();
             // 
-            // Board
+            // ChessForm
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
@@ -41,7 +41,7 @@
             ForeColor = SystemColors.HighlightText;
             Margin = new Padding(4);
             MinimumSize = new Size(800, 600);
-            Name = "Board";
+            Name = "ChessForm";
             ShowIcon = false;
             StartPosition = FormStartPosition.CenterScreen;
             ResumeLayout(false);

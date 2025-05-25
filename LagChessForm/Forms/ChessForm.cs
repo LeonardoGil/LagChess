@@ -1,8 +1,8 @@
 namespace LagChessForm
 {
-    public partial class Board : Form
+    public partial class ChessForm : Form
     {
-        public Board()
+        public ChessForm()
         {
             InitializeComponent();
         }
