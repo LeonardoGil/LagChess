@@ -8,6 +8,8 @@ namespace LagChessForm.Forms.Controls
     {
         public readonly Func<Point, Point, bool> CanMovePieceCallback;
 
+        private readonly Color _originalColor;
+
         private readonly Point _point;
         public Point Point { get => _point; }
 
@@ -31,6 +33,7 @@ namespace LagChessForm.Forms.Controls
             var pointIsEven = (_point.X + _point.Y) % 2 == 0;
 
             BackColor = pointIsEven ? Color.FromArgb(238, 238, 210) : Color.FromArgb(118, 150, 86);
+            _originalColor = BackColor;
 
             CanMovePieceCallback = canMovePieceCallback;
             DragEnter += SquareBoardControl_DragEnter;
@@ -97,17 +100,21 @@ namespace LagChessForm.Forms.Controls
             }
             else
             {
-                from.ShowError();
+                _ = from.ShowError();
             }
         }
 
-        public async void ShowError()
+        public async Task ShowError()
         {
-            var originalColor = BackColor;
-            BackColor = Color.Red;
-
-            await Task.Delay(800); 
-            BackColor = originalColor;
+            try
+            {
+                BackColor = Color.Red;
+                await Task.Delay(800);
+            }
+            finally
+            {
+                BackColor = _originalColor;
+            }
         }
     }
 }

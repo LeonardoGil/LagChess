@@ -26,25 +26,7 @@ namespace LagChessForm.Forms.Controls
             Refresh();
         }
 
-        private void Refresh(IEnumerable<Point>? points = null)
-        {
-            if (points is null)
-            {
-                foreach (var piece in Board.AvailablePieces)
-                {
-                    var square = _squares.First(square => square.Point == piece.Position);
-                    square.Piece = piece;
-                }
-            }
-            else
-            {
-                foreach (var point in points)
-                {
-                    var square = _squares.First(square => square.Point == point);
-                    square.Piece = square.Piece;
-                }
-            }
-        }
+        private new void Refresh() => _squares.ToList().ForEach(square => square.Piece = Board.GetTryPiece(square.Point));
 
         private void LoadSquares()
         {
