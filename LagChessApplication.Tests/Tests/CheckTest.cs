@@ -50,5 +50,20 @@ namespace LagChessApplication.Tests.Tests
 
             Assert.True(move.OpponentKingInCheck);
         }
+
+        [Fact]
+        public void Check_ShouldAllowKingToEscapeCheck_WhenKingIsThreatened()
+        {
+            var chessGame = GameChessExtension.Create();
+
+            chessGame.Play(Square.E2, Square.E3);
+            chessGame.Play(Square.D7, Square.D5);
+
+            chessGame.Play(Square.D1, Square.H5);
+            chessGame.Play(Square.C8, Square.D7);
+
+            chessGame.Play(Square.H5, Square.F7);
+            chessGame.Play(Square.E8, Square.F7);
+        }
     }
 }
