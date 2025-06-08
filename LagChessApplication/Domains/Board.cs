@@ -56,7 +56,7 @@ namespace LagChessApplication.Domains
             if (!piece.IsValidMove(to))
                 throw InvalidMoveException.Create(piece, to);
 
-            if (IsPawnMovingDiagonallyInvalid(piece, to))
+            if (piece is Pawn pawn && IsPawnMovingInvalid(pawn, to))
                 throw InvalidMoveException.Create(piece, to);
 
             if (!IsPathClear(piece, to))
@@ -114,13 +114,13 @@ namespace LagChessApplication.Domains
             return occupiedPiece is null || occupiedPiece.Color != piece.Color;
         }
 
-        private bool MovePutsOwnKingInCheck(Board board, IPiece piece)
+        private static bool MovePutsOwnKingInCheck(Board board, IPiece piece)
         {
             var opponentColor = piece.Color == PieceColorEnum.White ? PieceColorEnum.Black : PieceColorEnum.White;
 
-            var king = AvailablePieces.First(x => x is King && x.Color == piece.Color);
+            var king = board.AvailablePieces.First(x => x is King && x.Color == piece.Color);
 
-            var opponentPieces = AvailablePieces.Where(x => x.Color == opponentColor);
+            var opponentPieces = board.AvailablePieces.Where(x => x.Color == opponentColor);
 
             return opponentPieces.Any(opponentPiece => opponentPiece.GetPossibleMovesAndAttacks().Any(point => point == king.Position) && board.IsPathClear(opponentPiece, king.Position));
         }
@@ -193,13 +193,13 @@ namespace LagChessApplication.Domains
             });
         }
 
-        private bool MovePutsOpponentKingInCheck(Board board, IPiece piece)
+        private static bool MovePutsOpponentKingInCheck(Board board, IPiece piece)
         {
             var opponentColor = piece.Color == PieceColorEnum.White ? PieceColorEnum.Black : PieceColorEnum.White;
 
-            var opponentKing = AvailablePieces.First(x => x is King && x.Color == opponentColor);
+            var opponentKing = board.AvailablePieces.First(x => x is King && x.Color == opponentColor);
 
-            var pieces = AvailablePieces.Where(x => x.Color == piece.Color);
+            var pieces = board.AvailablePieces.Where(x => x.Color == piece.Color);
 
             return pieces.Any(x => x.GetPossibleMovesAndAttacks().Any(point => point == opponentKing.Position) && board.IsPathClear(x, opponentKing.Position));
         }
@@ -238,9 +238,15 @@ namespace LagChessApplication.Domains
             }
         }
 
-        private bool IsPawnMovingDiagonallyInvalid(IPiece piece, Point to)
+        private bool IsPawnMovingInvalid(Pawn pawn, Point to)
         {
-            return piece is Pawn pawn && pawn.IsAttack(to) && (!IsOccupied(to) || GetPiece(to).Color == pawn.Color);
+            var isSameColor = IsOccupied(to) && GetPiece(to).Color == pawn.Color;
+
+            var isInvalidAttack = IsOccupied(to) && (!pawn.IsAttack(to) || isSameColor);
+
+            var isInvalidMove = !IsOccupied(to) && pawn.IsAttack(to);
+
+            return isInvalidAttack || isInvalidMove;
         }
 
         private void PromotePawn(Pawn pawn, PieceTypeEnum type)
