@@ -49,6 +49,17 @@ namespace LagChessApplication.Tests.Tests
         }
 
         [Fact]
+        public void Pawn_ShouldThrowException_WhenTryingToCaptureForward()
+        {
+            var chessGame = GameChessExtension.Create();
+
+            chessGame.Play(Square.A2, Square.A4);
+            chessGame.Play(Square.A7, Square.A5);
+
+            Assert.Throws<InvalidMoveException>(() => chessGame.Play(Square.A4, Square.A5));
+        }
+
+        [Fact]
         public void Pawn_ShouldAllowDiagonalMove_WhenCapturing()
         {
             var chessGame = GameChessExtension.Create();

@@ -56,7 +56,7 @@ namespace LagChessApplication.Domains
             if (!piece.IsValidMove(to))
                 throw InvalidMoveException.Create(piece, to);
 
-            if (IsPawnMovingDiagonallyInvalid(piece, to))
+            if (piece is Pawn pawn && IsPawnMovingInvalid(pawn, to))
                 throw InvalidMoveException.Create(piece, to);
 
             if (!IsPathClear(piece, to))
@@ -164,9 +164,15 @@ namespace LagChessApplication.Domains
             }
         }
 
-        private bool IsPawnMovingDiagonallyInvalid(IPiece piece, Point to)
+        private bool IsPawnMovingInvalid(Pawn pawn, Point to)
         {
-            return piece is Pawn pawn && pawn.IsAttack(to) && (!IsOccupied(to) || GetPiece(to).Color == pawn.Color);
+            var isSameColor = IsOccupied(to) && GetPiece(to).Color == pawn.Color;
+
+            var isInvalidAttack = IsOccupied(to) && (!pawn.IsAttack(to) || isSameColor);
+
+            var isInvalidMove = !IsOccupied(to) && pawn.IsAttack(to);
+
+            return isInvalidAttack || isInvalidMove;
         }
 
         private void PromotePawn(Pawn pawn, PieceTypeEnum type)
