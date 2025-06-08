@@ -19,18 +19,21 @@ namespace LagChessApplication.Domains.Pieces
             return moveStyle == PieceMoveStyleEnum.Diagonal;
         }
 
+        private static readonly int[] possibleVerticalMoves = [1, 2];
+        private static readonly int[] possibleHorizontalMoves = [0, 1];
+
         public override bool IsValidMove(Point to)
         {
-            var move = _isAtStartingPosition ? 2 : 1;
+            var verticalMove = Math.Abs(to.Y - Position.Y);
+            var horizontalMove = Math.Abs(to.X - Position.X);
 
-            var horizontal = to.X >= Position.X - 1 && to.X <= Position.X + 1;
-
-            return Color switch
+            return verticalMove switch
             {
-                PieceColorEnum.White => horizontal && (to.Y > Position.Y && to.Y <= Position.Y + move),
-                PieceColorEnum.Black => horizontal && (to.Y < Position.Y && to.Y >= Position.Y - move),
+                1 => possibleHorizontalMoves.Contains(horizontalMove),
                 
-                _ => throw new NotSupportedException(),
+                2 => _isAtStartingPosition && horizontalMove == 0,
+                
+                _ => false,
             };
         }
     }

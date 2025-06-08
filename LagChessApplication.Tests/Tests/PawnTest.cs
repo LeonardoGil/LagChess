@@ -60,6 +60,14 @@ namespace LagChessApplication.Tests.Tests
         }
 
         [Fact]
+        public void Pawn_ShouldThrowException_WhenMovingLikeKnightOnFirstMove()
+        {
+            var chessGame = GameChessExtension.Create();
+
+            Assert.Throws<InvalidMoveException>(() => chessGame.Play(Square.A2, Square.B4));
+        }
+
+        [Fact]
         public void Pawn_ShouldAllowDiagonalMove_WhenCapturing()
         {
             var chessGame = GameChessExtension.Create();
