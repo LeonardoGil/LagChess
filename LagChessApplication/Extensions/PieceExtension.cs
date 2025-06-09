@@ -19,13 +19,22 @@ namespace LagChessApplication.Extensions
             {
                 case PieceMoveStyleEnum.OneStraight:
 
-                    var directions = new Size[]
+                    var directions = default(IEnumerable<Size>);
+
+                    if (piece is Pawn)
                     {
+                        directions = [new(0, 1)];
+                    }
+                    else
+                    {
+                        directions = 
+                        [
                             new(0, 1),
                             new(0, -1),
                             new(1, 0),
                             new(-1, 0),
-                    };
+                        ];
+                    }
 
                     return directions.Select(x => Point.Add(piece.Position, x)).Where(BoardExtension.IsInBoard).ToArray();
 
