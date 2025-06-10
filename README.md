@@ -18,9 +18,9 @@ O projeto está em constante desenvolvimento. Algumas funcionalidades essenciais
 - ✅ Inicialização de tabuleiro padrão
 - ✅ Movimentação legal das peças  
 - ✅ Detecção de xeque  
-- ✅ Promoção de peões  
+- ✅ Promoção de peão  
 - ✅ Histórico de jogadas 
-- ⬜ Xeque-mate (em desenvolvimento)  
+- ✅ Xeque-mate
 - ⬜ Roque (em desenvolvimento)  
 - ⬜ En passant (em desenvolvimento)  
 
