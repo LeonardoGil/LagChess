@@ -3,13 +3,14 @@ using System.Text;
 
 namespace LagChessApplication.Domains.Chess
 {
-    public readonly struct ChessMove(Square from, Square to, PieceTypeEnum piece, bool opponentKingInCheck, bool capturedPiece, PieceTypeEnum? pawnPromotion)
+    public readonly struct ChessMove(Square from, Square to, PieceTypeEnum piece, bool opponentKingInCheck, bool opponentKingInCheckMate, bool capturedPiece, PieceTypeEnum? pawnPromotion)
     {
         public readonly Square From { get; } = from;
         public readonly Square To { get; } = to;
         public readonly PieceTypeEnum Piece { get; } = piece;
 
         public readonly bool OpponentKingInCheck { get; } = opponentKingInCheck;
+        public readonly bool OpponentKingInCheckMate { get; } = opponentKingInCheckMate;
         public readonly bool CapturedPiece { get; } = capturedPiece;
         public readonly PieceTypeEnum? PawnPromotion { get; } = pawnPromotion;
 
@@ -46,7 +47,11 @@ namespace LagChessApplication.Domains.Chess
                     notationBuilder.Append(promotionKey);
                 }
 
-                if (OpponentKingInCheck)
+                if (OpponentKingInCheckMate)
+                {
+                    notationBuilder.Append('#');
+                }
+                else if (OpponentKingInCheck)
                 {
                     notationBuilder.Append('+');
                 }
@@ -70,6 +75,7 @@ namespace LagChessApplication.Domains.Chess
             };
         }
 
-        public static ChessMove Create(Square from, Square to, PieceTypeEnum piece, bool opponentKingInCheck, bool capturedPiece, PieceTypeEnum? pawnPromotion) => new(from, to, piece, opponentKingInCheck, capturedPiece, pawnPromotion);
+        public static ChessMove Create(Square from, Square to, PieceTypeEnum piece, bool opponentKingInCheck, bool opponentKingInCheckMate, bool capturedPiece, PieceTypeEnum? pawnPromotion) => 
+            new(from, to, piece, opponentKingInCheck, opponentKingInCheckMate, capturedPiece, pawnPromotion);
     }
 }
