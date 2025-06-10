@@ -53,16 +53,7 @@ namespace LagChessApplication.Domains
         {
             var piece = GetPiece(from);
 
-            if (!piece.IsValidMove(to))
-                throw InvalidMoveException.Create(piece, to);
-
-            if (piece is Pawn pawn && IsPawnMovingInvalid(pawn, to))
-                throw InvalidMoveException.Create(piece, to);
-
-            if (!IsPathClear(piece, to))
-                throw InvalidMoveException.Create(piece, to);
-
-            if (!CanPlacePiece(piece, to))
+            if (!IsValidMove(piece, to))
                 throw InvalidMoveException.Create(piece, to);
 
             try
@@ -73,11 +64,9 @@ namespace LagChessApplication.Domains
                     _pawnPromotion = OnPawnPromotion.Invoke();
                 }
 
-                var simulatedBoard = SimulatedBoard.CreateClone(this);
+                var simulatedBoard = SimulatedBoard.CreateClone(this).SimulatedMovePiece(from, to);
 
-                var simulatedPiece = simulatedBoard.GetPiece(from);
-
-                simulatedBoard.SetPiecePosition(simulatedPiece, to);
+                var simulatedPiece = simulatedBoard.GetPiece(to);
 
                 if (MovePutsOwnKingInCheck(simulatedBoard, simulatedPiece))
                 {
@@ -86,11 +75,11 @@ namespace LagChessApplication.Domains
 
                 SetPiecePosition(piece, to);
 
-                    var opponentIsCheck = MovePutsOpponentKingInCheck(this, piece);
+                var opponentIsCheck = MovePutsOpponentKingInCheck(this, piece);
 
-                    var OpponentIsCheckmated = opponentIsCheck && MovePutsOpponentKingInCheckmate(simulatedBoard, simulatedPiece);
+                var opponentIsCheckmated = opponentIsCheck && MovePutsOpponentKingInCheckmate(this, piece);
 
-                return ChessMove.Create(from, to, piece.Type, opponentIsCheck, OpponentIsCheckmated, _capturedPiece, _pawnPromotion);
+                return ChessMove.Create(from, to, piece.Type, opponentIsCheck, opponentIsCheckmated, _capturedPiece, _pawnPromotion);
             }
             catch (Exception)
             {
@@ -127,7 +116,7 @@ namespace LagChessApplication.Domains
 
             var opponentKing = board.AvailablePieces.First(x => x is King && x.Color == opponentColor);
 
-            return !HasAnyLegalMoveToEscapeCheck(board, opponentKing) && !CanAnyPieceCaptureThreat(board, opponentKing) && !CanAnyPieceBlockThreat(board, opponentKing); 
+            return !HasAnyLegalMoveToEscapeCheck(board, opponentKing) && !CanAnyPieceCaptureThreat(board, opponentKing) && !CanAnyPieceBlockThreat(board, opponentKing);
         }
 
         private bool CanAnyPieceBlockThreat(Board board, IPiece king)
@@ -146,16 +135,19 @@ namespace LagChessApplication.Domains
 
                     foreach (var move in possibleMoves)
                     {
-                        var simulatedBoard = SimulatedBoard.CreateClone(board);
+                        try
+                        {
+                            var simulatedBoard = SimulatedBoard.CreateClone(board).SimulatedMovePiece(piece.Position, move);
 
-                        var simulatedPiece = simulatedBoard.GetPiece(piece.Position);
+                            var simulatedKing = simulatedBoard.GetPiece(king.Position);
 
-                        simulatedBoard.SetPiecePosition(simulatedPiece, move);
-
-                        var simulatedKing = simulatedBoard.GetPiece(king.Position);
-
-                        if (!MovePutsOwnKingInCheck(simulatedBoard, simulatedKing))
-                            return true;
+                            if (!MovePutsOwnKingInCheck(simulatedBoard, simulatedKing))
+                                return true;
+                        }
+                        catch
+                        {
+                            continue;
+                        }
                     }
                 }
             }
@@ -186,16 +178,19 @@ namespace LagChessApplication.Domains
                 if (!board.IsPathClear(piece, attacker.Position))
                     continue;
 
-                var simulatedBoard = SimulatedBoard.CreateClone(board);
-                
-                var simulatedPiece = simulatedBoard.GetPiece(piece.Position);
+                try
+                {
+                    var simulatedBoard = SimulatedBoard.CreateClone(board).SimulatedMovePiece(piece.Position, attacker.Position);
+                    
+                    var simulatedKing = simulatedBoard.GetPiece(king.Position);
 
-                simulatedBoard.SetPiecePosition(simulatedPiece, attacker.Position);
-
-                var simulatedKing = simulatedBoard.GetPiece(king.Position);
-
-                if (!MovePutsOwnKingInCheck(simulatedBoard, simulatedKing))
-                    return true;
+                    if (!MovePutsOwnKingInCheck(simulatedBoard, simulatedKing))
+                        return true;
+                }
+                catch
+                {
+                    continue;
+                }
             }
 
             return false;
@@ -206,19 +201,24 @@ namespace LagChessApplication.Domains
             var possibleMoves = king.GetPossibleMoves().Where(point =>
             {
                 var piece = board.GetTryPiece(point);
-                
+
                 return piece is null || piece.Color != king.Color;
-            }); 
+            });
 
             return possibleMoves.Any(move =>
             {
-                var simulatedBoard = SimulatedBoard.CreateClone(board);
+                try
+                {
+                    var simulatedBoard = SimulatedBoard.CreateClone(board).SimulatedMovePiece(king.Position, move);
 
-                var simulatedKing = simulatedBoard.GetPiece(king.Position);
+                    var simulatedKing = simulatedBoard.GetPiece(move);
 
-                simulatedBoard.SetPiecePosition(simulatedKing, move);
-
-                return !MovePutsOwnKingInCheck(simulatedBoard, simulatedKing);
+                    return !MovePutsOwnKingInCheck(simulatedBoard, simulatedKing);
+                }
+                catch
+                {
+                    return false;
+                }
             });
         }
 
@@ -278,6 +278,11 @@ namespace LagChessApplication.Domains
             return isInvalidAttack || isInvalidMove;
         }
 
+        internal bool IsValidMove(IPiece piece, Point to)
+        {
+            return piece.IsValidMove(to) && !(piece is Pawn pawn && IsPawnMovingInvalid(pawn, to)) && IsPathClear(piece, to) && CanPlacePiece(piece, to);
+        }
+
         private void PromotePawn(Pawn pawn, PieceTypeEnum type)
         {
             ArgumentNullException.ThrowIfNull(pawn);
@@ -290,7 +295,7 @@ namespace LagChessApplication.Domains
             Pieces[pawnIndex] = pawn.ConvertTo(type);
         }
 
-        private void SetPiecePosition(IPiece piece, Point to)
+        internal void SetPiecePosition(IPiece piece, Point to)
         {
             var occupiedPiece = GetTryPiece(to);
 
