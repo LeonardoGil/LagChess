@@ -13,5 +13,7 @@ namespace LagChessApplication.Exceptions
         public Point To { get; init; } = to;
 
         public static InvalidMoveException Create(IPiece piece, Point to) => new (piece, to);
+
+        public static InvalidMoveException CreateSimuleted(IPiece piece, Point to) => new(piece, to, $"[Simuleted] Invalid move for piece {piece.Type} to position {(Square)to}.");
     }
 }
