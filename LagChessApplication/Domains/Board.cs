@@ -22,8 +22,9 @@ namespace LagChessApplication.Domains
         }
 
         public event Func<PieceTypeEnum>? OnPawnPromotion;
-
+            
         private bool _capturedPiece;
+        private IPiece? _anPassantTarget;
         private PieceTypeEnum? _pawnPromotion;
 
         public IPiece[] Pieces { get; }
@@ -64,7 +65,7 @@ namespace LagChessApplication.Domains
                     _pawnPromotion = OnPawnPromotion.Invoke();
                 }
 
-                var simulatedBoard = SimulatedBoard.CreateClone(this).SimulatedMovePiece(from, to);
+                var simulatedBoard = SimulatedBoardExtension.CreateClone(this).SimulatedMovePiece(from, to);
 
                 var simulatedPiece = simulatedBoard.GetPiece(to);
 
@@ -137,7 +138,7 @@ namespace LagChessApplication.Domains
                     {
                         try
                         {
-                            var simulatedBoard = SimulatedBoard.CreateClone(board).SimulatedMovePiece(piece.Position, move);
+                            var simulatedBoard = SimulatedBoardExtension.CreateClone(board).SimulatedMovePiece(piece.Position, move);
 
                             var simulatedKing = simulatedBoard.GetPiece(king.Position);
 
@@ -180,7 +181,7 @@ namespace LagChessApplication.Domains
 
                 try
                 {
-                    var simulatedBoard = SimulatedBoard.CreateClone(board).SimulatedMovePiece(piece.Position, attacker.Position);
+                    var simulatedBoard = SimulatedBoardExtension.CreateClone(board).SimulatedMovePiece(piece.Position, attacker.Position);
                     
                     var simulatedKing = simulatedBoard.GetPiece(king.Position);
 
@@ -209,7 +210,7 @@ namespace LagChessApplication.Domains
             {
                 try
                 {
-                    var simulatedBoard = SimulatedBoard.CreateClone(board).SimulatedMovePiece(king.Position, move);
+                    var simulatedBoard = SimulatedBoardExtension.CreateClone(board).SimulatedMovePiece(king.Position, move);
 
                     var simulatedKing = simulatedBoard.GetPiece(move);
 

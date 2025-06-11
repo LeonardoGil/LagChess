@@ -1,9 +1,10 @@
-﻿using LagChessApplication.Exceptions;
+﻿using LagChessApplication.Domains;
+using LagChessApplication.Exceptions;
 using System.Drawing;
 
-namespace LagChessApplication.Domains
+namespace LagChessApplication.Extensions
 {
-    public static class SimulatedBoard
+    public static class SimulatedBoardExtension
     {
         public static Board CreateClone(Board board) => board.Clone();
 
