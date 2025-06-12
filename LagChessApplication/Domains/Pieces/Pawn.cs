@@ -19,7 +19,6 @@ namespace LagChessApplication.Domains.Pieces
             return moveStyle == PieceMoveStyleEnum.Diagonal;
         }
 
-        private static readonly int[] possibleVerticalMoves = [1, 2];
         private static readonly int[] possibleHorizontalMoves = [0, 1];
 
         public override bool IsValidMove(Point to)
@@ -35,6 +34,11 @@ namespace LagChessApplication.Domains.Pieces
                 
                 _ => false,
             };
+        }
+
+        public bool IsDoubleStepMove(Point to)
+        {
+            return Math.Abs(to.Y - Position.Y) == 2;
         }
     }
 }

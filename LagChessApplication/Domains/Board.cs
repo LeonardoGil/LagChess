@@ -10,9 +10,11 @@ namespace LagChessApplication.Domains
 {
     public class Board : IDeepCloneable<Board>
     {
-        public Board(IPiece[] pieces, Func<PieceTypeEnum>? onPawnPromotion = null)
+        internal Board(IPiece[] pieces, Pawn? anPassantTarget = null, Func<PieceTypeEnum>? onPawnPromotion = null)
         {
             Pieces = pieces;
+            
+            _anPassantTarget = anPassantTarget;
 
             if (onPawnPromotion is not null)
             {
@@ -24,7 +26,7 @@ namespace LagChessApplication.Domains
         public event Func<PieceTypeEnum>? OnPawnPromotion;
             
         private bool _capturedPiece;
-        private IPiece? _anPassantTarget;
+        private Pawn? _anPassantTarget;
         private PieceTypeEnum? _pawnPromotion;
 
         public IPiece[] Pieces { get; }
@@ -42,7 +44,7 @@ namespace LagChessApplication.Domains
                 onPawnPromotion = () => { return _pawnPromotion.Value; };
             }
 
-            return new Board(pieces, onPawnPromotion);
+            return new Board(pieces, _anPassantTarget, onPawnPromotion);
         }
 
         public IPiece GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from) ?? throw PieceNotFoundException.Create(from);
@@ -234,7 +236,7 @@ namespace LagChessApplication.Domains
             return pieces.Any(x => x.GetPossibleMovesAndAttacks().Any(point => point == opponentKing.Position) && board.IsPathClear(x, opponentKing.Position));
         }
 
-        private bool IsOccupied(Point point) => GetTryPiece(point) is not null;
+        internal bool IsOccupied(Point point) => GetTryPiece(point) is not null;
 
         private bool IsPathClear(IPiece piece, Point to)
         {
@@ -268,20 +270,10 @@ namespace LagChessApplication.Domains
             }
         }
 
-        private bool IsPawnMovingInvalid(Pawn pawn, Point to)
-        {
-            var isSameColor = IsOccupied(to) && GetPiece(to).Color == pawn.Color;
-
-            var isInvalidAttack = IsOccupied(to) && (!pawn.IsAttack(to) || isSameColor);
-
-            var isInvalidMove = !IsOccupied(to) && pawn.IsAttack(to);
-
-            return isInvalidAttack || isInvalidMove;
-        }
-
         internal bool IsValidMove(IPiece piece, Point to)
         {
-            return piece.IsValidMove(to) && !(piece is Pawn pawn && IsPawnMovingInvalid(pawn, to)) && IsPathClear(piece, to) && CanPlacePiece(piece, to);
+            return piece.IsValidMove(to) && IsPathClear(piece, to) && CanPlacePiece(piece, to) && !(piece is Pawn pawn && PawnMoveExtension.IsMovingInvalid(this, pawn, to, _anPassantTarget));
+
         }
 
         private void PromotePawn(Pawn pawn, PieceTypeEnum type)
@@ -306,12 +298,14 @@ namespace LagChessApplication.Domains
                 _capturedPiece = true;
             }
 
+            var pawn = piece as Pawn;
+
+            _anPassantTarget = pawn is not null && pawn.IsDoubleStepMove(to) ? pawn : default;
+
             piece.Move(to);
 
             if (BoardExtension.ShouldPromotePawn(piece))
             {
-                var pawn = piece as Pawn;
-
                 ArgumentNullException.ThrowIfNull(pawn);
                 ArgumentNullException.ThrowIfNull(_pawnPromotion);
 
