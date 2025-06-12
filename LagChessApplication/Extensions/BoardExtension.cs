@@ -11,7 +11,7 @@ namespace LagChessApplication.Extensions
         public static bool IsInBoard(int x, int y) => x is >= 1 and <= 8 && y is >= 1 and <= 8;
 
 
-        public static bool ShouldPromotePawn(IPiece piece) => ShouldPromotePawn(piece, piece.Position);
+        public static bool ShouldPromotePawn(this IPiece piece) => ShouldPromotePawn(piece, piece.Position);
         public static bool ShouldPromotePawn(IPiece piece, Point position) => piece is Pawn && IsAtPromotionRow(position, piece.Color);
 
 
