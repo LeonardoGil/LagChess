@@ -5,7 +5,7 @@ using LagChessApplication.Extensions.Boards;
 using LagChessApplication.Interfaces;
 using System.Drawing;
 
-namespace LagChessApplication.Extensions
+namespace LagChessApplication.Extensions.Pieces
 {
     internal static class PawnExtension
     {

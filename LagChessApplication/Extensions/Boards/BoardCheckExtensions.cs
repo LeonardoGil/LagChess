@@ -1,9 +1,9 @@
-﻿using LagChessApplication.Domains.Enums;
+﻿using LagChessApplication.Domains;
+using LagChessApplication.Domains.Enums;
 using LagChessApplication.Domains.Pieces;
-using LagChessApplication.Domains;
+using LagChessApplication.Extensions.Pieces;
 using LagChessApplication.Interfaces;
 using System.Drawing;
-using System.Linq;
 
 namespace LagChessApplication.Extensions.Boards
 {
