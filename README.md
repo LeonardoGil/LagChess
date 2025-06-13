@@ -21,8 +21,8 @@ O projeto está em constante desenvolvimento. Algumas funcionalidades essenciais
 - ✅ Promoção de peão  
 - ✅ Histórico de jogadas 
 - ✅ Xeque-mate
+- ✅ En passant 
 - ⬜ Roque (em desenvolvimento)  
-- ⬜ En passant (em desenvolvimento)  
 
 ## 📦 Tecnologias Utilizadas
 
