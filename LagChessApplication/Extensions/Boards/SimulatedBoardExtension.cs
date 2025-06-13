@@ -2,7 +2,7 @@
 using LagChessApplication.Exceptions;
 using System.Drawing;
 
-namespace LagChessApplication.Extensions
+namespace LagChessApplication.Extensions.Boards
 {
     public static class SimulatedBoardExtension
     {

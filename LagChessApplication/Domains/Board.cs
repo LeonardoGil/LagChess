@@ -3,6 +3,7 @@ using LagChessApplication.Domains.Enums;
 using LagChessApplication.Domains.Pieces;
 using LagChessApplication.Exceptions;
 using LagChessApplication.Extensions;
+using LagChessApplication.Extensions.Boards;
 using LagChessApplication.Interfaces;
 using System.Drawing;
 
@@ -25,9 +26,9 @@ namespace LagChessApplication.Domains
 
         public event Func<PieceTypeEnum>? OnPawnPromotion;
             
-        private bool _capturedPiece;
-        private Pawn? _anPassantTarget;
-        private PieceTypeEnum? _pawnPromotion;
+        internal bool _capturedPiece;
+        internal Pawn? _anPassantTarget;
+        internal PieceTypeEnum? _pawnPromotion;
 
         public IPiece[] Pieces { get; }
 
@@ -57,12 +58,12 @@ namespace LagChessApplication.Domains
         {
             var piece = GetPiece(from);
 
-            if (!IsValidMove(piece, to))
+            if (!BoardMoveExtension.IsValidMove(this, piece, to))
                 throw InvalidMoveException.Create(piece, to);
 
             try
             {
-                if (BoardExtension.ShouldPromotePawn(piece, to))
+                if (piece.ShouldPromotePawn(to))
                 {
                     ArgumentNullException.ThrowIfNull(OnPawnPromotion);
                     _pawnPromotion = OnPawnPromotion.Invoke();
@@ -77,7 +78,7 @@ namespace LagChessApplication.Domains
                     throw KingInCheckException.Create(piece, to);
                 }
 
-                SetPiecePosition(piece, to);
+                this.SetPiecePosition(piece, to);
 
                 var opponentIsCheck = MovePutsOpponentKingInCheck(this, piece);
 
@@ -93,74 +94,6 @@ namespace LagChessApplication.Domains
             {
                 _pawnPromotion = default;
                 _capturedPiece = default;
-            }
-        }
-
-        private bool CanPlacePiece(IPiece piece, Point to)
-        {
-            var occupiedPiece = GetTryPiece(to);
-
-            return occupiedPiece is null || occupiedPiece.Color != piece.Color;
-        }
-
-        internal bool IsOccupied(Point point) => GetTryPiece(point) is not null;
-
-        private bool IsPathClear(IPiece piece, Point to)
-        {
-            var from = piece.Position;
-            var moveStyle = (from, to).ConvertToMoveStyleEnum();
-
-            var directionX = Math.Sign(to.X - from.X);
-            var directionY = Math.Sign(to.Y - from.Y);
-
-            switch (moveStyle)
-            {
-                case PieceMoveStyleEnum.Straight:
-                case PieceMoveStyleEnum.Diagonal:
-                    var current = new Point(from.X + directionX, from.Y + directionY);
-
-                    while (current != to)
-                    {
-                        if (IsOccupied(current))
-                            return false;
-
-                        current = new Point(current.X + directionX, current.Y + directionY);
-                    }
-
-                    return true;
-
-                case PieceMoveStyleEnum.LShaped:
-                    return true;
-
-                default:
-                    throw new NotSupportedException("Unknown movement style");
-            }
-        }
-
-        internal bool IsValidMove(IPiece piece, Point to)
-        {
-            return piece.IsValidMove(to) && IsPathClear(piece, to) && CanPlacePiece(piece, to) && !(piece is Pawn pawn && pawn.IsMovingInvalid(this, to, _anPassantTarget));
-        }
-
-        internal void SetPiecePosition(IPiece piece, Point to)
-        {
-            var occupiedPiece = GetTryPiece(to);
-
-            if (occupiedPiece is not null)
-            {
-                occupiedPiece.Kill();
-                _capturedPiece = true;
-            }
-
-            var pawn = piece as Pawn;
-
-            _anPassantTarget = pawn is not null && pawn.IsDoubleStepMove(to) ? pawn : default;
-
-            piece.Move(to);
-
-            if (pawn is not null && piece.ShouldPromotePawn() && _pawnPromotion.HasValue)
-            {
-                pawn.PromotePawn(this, _pawnPromotion.Value);
             }
         }
 

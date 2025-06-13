@@ -1,4 +1,4 @@
-﻿using LagChessApplication.Extensions;
+﻿using LagChessApplication.Extensions.Boards;
 using System.Drawing;
 
 namespace LagChessApplication.Domains
@@ -23,7 +23,7 @@ namespace LagChessApplication.Domains
 
         public Square(Point position)
         {
-            if (!BoardExtension.IsInBoard(position))
+            if (!BoardMoveExtension.IsInBoard(position))
                 throw new ArgumentOutOfRangeException(nameof(position), $"Invalid position: {position}. Position must be between (1,1) and (8,8).");
 
             Point = position;
