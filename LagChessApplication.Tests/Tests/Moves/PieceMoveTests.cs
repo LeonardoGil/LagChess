@@ -3,12 +3,12 @@ using LagChessApplication.Exceptions;
 using LagChessApplication.Extensions;
 using Xunit;
 
-namespace LagChessApplication.Tests.Tests
+namespace LagChessApplication.Tests.Tests.Moves
 {
-    public class BoardMovePieceTest
+    public class PieceMoveTests
     {
         [Fact]
-        public void AllPieces_ShouldMoveCorrectly_FromInitialPositions()
+        public void Game_ShouldMoveCorrectly_FromInitialPositions()
         {
             var chessGame = GameChessExtension.Create();
 
@@ -35,7 +35,7 @@ namespace LagChessApplication.Tests.Tests
         }
 
         [Fact]
-        public void AllPieces_ShouldRejectInvalidMoves_FromInitialPositions()
+        public void Game_ShouldRejectInvalidMoves_FromInitialPositions()
         {
             var chessGame = GameChessExtension.Create();
 
@@ -47,7 +47,7 @@ namespace LagChessApplication.Tests.Tests
         }
 
         [Fact]
-        public void Bishop_ShouldThrowInvalidMoveException_WhenPieceBlocksThePath()
+        public void Game_ShouldThrowInvalidMoveException_WhenPathIsBlocked()
         {
             var chessGame = GameChessExtension.Create();
 

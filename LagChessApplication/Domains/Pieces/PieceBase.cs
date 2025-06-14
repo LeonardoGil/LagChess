@@ -19,9 +19,9 @@ namespace LagChessApplication.Domains.Pieces
 
                 return _position.Value;
             }
-            protected set => _position = value;
         }
         public bool IsDead { get; protected set; }
+        public bool StartPosition { get => _isAtStartingPosition; }
 
         public PieceColorEnum Color { get; init; } = color;
         public PieceTypeEnum Type { get; init; }
@@ -35,7 +35,7 @@ namespace LagChessApplication.Domains.Pieces
 
         public void Move(Point to)
         {
-            Position = to;
+            _position = to;
 
             if (_isAtStartingPosition)
                 _isAtStartingPosition = false;
