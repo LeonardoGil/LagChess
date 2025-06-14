@@ -20,6 +20,17 @@ namespace LagChessApplication.Extensions.Boards
             return opponentPieces.Any(opponentPiece => opponentPiece.GetPossibleMovesAndAttacks().Any(point => point == king.Position) && board.IsPathClear(opponentPiece, king.Position));
         }
 
+        internal static bool MovePutsOpponentKingInCheck(this Board board, IPiece piece)
+        {
+            var opponentColor = piece.Color == PieceColorEnum.White ? PieceColorEnum.Black : PieceColorEnum.White;
+
+            var opponentKing = board.AvailablePieces.First(x => x is King && x.Color == opponentColor);
+
+            var pieces = board.AvailablePieces.Where(x => x.Color == piece.Color);
+
+            return pieces.Any(x => x.GetPossibleMovesAndAttacks().Any(point => point == opponentKing.Position) && board.IsPathClear(x, opponentKing.Position));
+        }
+
         internal static bool MovePutsOpponentKingInCheckmate(this Board board, IPiece piece)
         {
             var opponentColor = piece.Color == PieceColorEnum.White ? PieceColorEnum.Black : PieceColorEnum.White;
@@ -29,7 +40,7 @@ namespace LagChessApplication.Extensions.Boards
             return !HasAnyLegalMoveToEscapeCheck(board, opponentKing) && !CanAnyPieceCaptureThreat(board, opponentKing) && !CanAnyPieceBlockThreat(board, opponentKing);
         }
 
-        internal static bool CanAnyPieceBlockThreat(this Board board, IPiece king)
+        private static bool CanAnyPieceBlockThreat(this Board board, IPiece king)
         {
             var friendlyPieces = board.AvailablePieces.Where(piece => piece.Color == king.Color && piece is not King);
 
@@ -47,11 +58,7 @@ namespace LagChessApplication.Extensions.Boards
                     {
                         try
                         {
-                            var simulatedBoard = SimulatedBoardExtension.CreateClone(board).SimulatedMovePiece(piece.Position, move);
-
-                            var simulatedKing = simulatedBoard.GetPiece(king.Position);
-
-                            if (!MovePutsOwnKingInCheck(simulatedBoard, simulatedKing))
+                            if (!board.SimulatedMovePiecePutsOwnKingInCheck(piece.Position, move))
                                 return true;
                         }
                         catch
@@ -65,7 +72,7 @@ namespace LagChessApplication.Extensions.Boards
             return false;
         }
 
-        internal static bool CanAnyPieceCaptureThreat(this Board board, IPiece king)
+        private static bool CanAnyPieceCaptureThreat(this Board board, IPiece king)
         {
             var opponentAttackers = board.AvailablePieces.Where(p => p.Color != king.Color)
                                                          .Where(p => p.GetPossibleMovesAndAttacks().Contains(king.Position) && board.IsPathClear(p, king.Position));
@@ -90,11 +97,7 @@ namespace LagChessApplication.Extensions.Boards
 
                 try
                 {
-                    var simulatedBoard = SimulatedBoardExtension.CreateClone(board).SimulatedMovePiece(piece.Position, attacker.Position);
-
-                    var simulatedKing = simulatedBoard.GetPiece(king.Position);
-
-                    if (!MovePutsOwnKingInCheck(simulatedBoard, simulatedKing))
+                    if (!board.SimulatedMovePiecePutsOwnKingInCheck(piece.Position, attacker.Position))
                         return true;
                 }
                 catch
@@ -106,7 +109,7 @@ namespace LagChessApplication.Extensions.Boards
             return false;
         }
 
-        internal static bool HasAnyLegalMoveToEscapeCheck(this Board board, IPiece king)
+        private static bool HasAnyLegalMoveToEscapeCheck(this Board board, IPiece king)
         {
             var possibleMoves = king.GetPossibleMoves().Where(point =>
             {
@@ -119,11 +122,7 @@ namespace LagChessApplication.Extensions.Boards
             {
                 try
                 {
-                    var simulatedBoard = SimulatedBoardExtension.CreateClone(board).SimulatedMovePiece(king.Position, move);
-
-                    var simulatedKing = simulatedBoard.GetPiece(move);
-
-                    return !MovePutsOwnKingInCheck(simulatedBoard, simulatedKing);
+                    return !board.SimulatedMovePiecePutsOwnKingInCheck(king.Position, move);
                 }
                 catch
                 {
@@ -132,18 +131,7 @@ namespace LagChessApplication.Extensions.Boards
             });
         }
 
-        internal static bool MovePutsOpponentKingInCheck(this Board board, IPiece piece)
-        {
-            var opponentColor = piece.Color == PieceColorEnum.White ? PieceColorEnum.Black : PieceColorEnum.White;
-
-            var opponentKing = board.AvailablePieces.First(x => x is King && x.Color == opponentColor);
-
-            var pieces = board.AvailablePieces.Where(x => x.Color == piece.Color);
-
-            return pieces.Any(x => x.GetPossibleMovesAndAttacks().Any(point => point == opponentKing.Position) && board.IsPathClear(x, opponentKing.Position));
-        }
-
-        internal static List<Point> GetBlockingSquares(Point kingPos, Point attackerPos, IPiece attacker)
+        private static List<Point> GetBlockingSquares(Point kingPos, Point attackerPos, IPiece attacker)
         {
             var blockingSquares = new List<Point>();
 

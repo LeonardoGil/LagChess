@@ -58,33 +58,12 @@ namespace LagChessApplication.Domains
         {
             var piece = GetPiece(from);
 
-            if (!BoardMoveExtension.IsValidMove(this, piece, to))
+            if (!this.IsValidMove(piece, to))
                 throw InvalidMoveException.Create(piece, to);
 
             try
             {
-                if (piece.ShouldPromotePawn(to))
-                {
-                    ArgumentNullException.ThrowIfNull(OnPawnPromotion);
-                    _pawnPromotion = OnPawnPromotion.Invoke();
-                }
-
-                var simulatedBoard = SimulatedBoardExtension.CreateClone(this).SimulatedMovePiece(from, to);
-
-                var simulatedPiece = simulatedBoard.GetPiece(to);
-
-                if (simulatedBoard.MovePutsOwnKingInCheck(simulatedPiece))
-                {
-                    throw KingInCheckException.Create(piece, to);
-                }
-
-                this.SetPiecePosition(piece, to);
-
-                var opponentIsCheck = this.MovePutsOpponentKingInCheck(piece);
-
-                var opponentIsCheckmated = opponentIsCheck && this.MovePutsOpponentKingInCheckmate(piece);
-
-                return ChessMove.Create(from, to, piece.Type, opponentIsCheck, opponentIsCheckmated, _capturedPiece, _pawnPromotion);
+                return SetPiece(piece, from, to);
             }
             catch (Exception)
             {
@@ -95,6 +74,28 @@ namespace LagChessApplication.Domains
                 _pawnPromotion = default;
                 _capturedPiece = default;
             }
+        }
+
+        private ChessMove SetPiece(IPiece piece, Point from, Point to)
+        {
+            if (piece.ShouldPromotePawn(to))
+            {
+                ArgumentNullException.ThrowIfNull(OnPawnPromotion);
+                _pawnPromotion = OnPawnPromotion.Invoke();
+            }
+
+            if (this.SimulatedMovePiecePutsOwnKingInCheck(from, to))
+            {
+                throw KingInCheckException.Create(piece, to);
+            }
+
+            this.SetPiecePosition(piece, to);
+
+            var opponentIsCheck = this.MovePutsOpponentKingInCheck(piece);
+
+            var opponentIsCheckmated = opponentIsCheck && this.MovePutsOpponentKingInCheckmate(piece);
+
+            return ChessMove.Create(from, to, piece.Type, opponentIsCheck, opponentIsCheckmated, _capturedPiece, _pawnPromotion);
         }
     }
 }
