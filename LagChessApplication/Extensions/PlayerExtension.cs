@@ -1,5 +1,6 @@
 ﻿using LagChessApplication.Domains;
 using LagChessApplication.Domains.Pieces;
+using LagChessApplication.Extensions.Pieces;
 
 namespace LagChessApplication.Extensions
 {

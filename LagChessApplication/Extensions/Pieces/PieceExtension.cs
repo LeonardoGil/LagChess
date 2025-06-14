@@ -1,9 +1,10 @@
 ﻿using LagChessApplication.Domains.Enums;
 using LagChessApplication.Domains.Pieces;
+using LagChessApplication.Extensions.Boards;
 using LagChessApplication.Interfaces;
 using System.Drawing;
 
-namespace LagChessApplication.Extensions
+namespace LagChessApplication.Extensions.Pieces
 {
     public static class PieceExtension
     {
@@ -12,7 +13,7 @@ namespace LagChessApplication.Extensions
         public static T CreatePieceBlack<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.Black) as T ?? throw new Exception($"Failed to cast piece of type '{typeof(T).Name}'.");
 
 
-        public static Point[] GetPossibleMoves(this IPiece piece) => GetPossibleMoves(piece, piece.MoveStyle);
+        public static Point[] GetPossibleMoves(this IPiece piece) => piece.GetPossibleMoves(piece.MoveStyle);
         public static Point[] GetPossibleMoves(this IPiece piece, PieceMoveStyleEnum moveStyle)
         {
             switch (moveStyle)
@@ -27,7 +28,7 @@ namespace LagChessApplication.Extensions
                     }
                     else
                     {
-                        directions = 
+                        directions =
                         [
                             new(0, 1),
                             new(0, -1),
@@ -36,7 +37,7 @@ namespace LagChessApplication.Extensions
                         ];
                     }
 
-                    return directions.Select(x => Point.Add(piece.Position, x)).Where(BoardExtension.IsInBoard).ToArray();
+                    return directions.Select(x => Point.Add(piece.Position, x)).Where(BoardMoveExtension.IsInBoard).ToArray();
 
                 case PieceMoveStyleEnum.Straight:
                     var linearX = Enumerable.Range(1, 8).Where(x => piece.Position.X != x).Select(x => new Point(x, piece.Position.Y));
@@ -63,7 +64,7 @@ namespace LagChessApplication.Extensions
                         }
                     }
 
-                    return diagonal.Where(BoardExtension.IsInBoard).ToArray();
+                    return diagonal.Where(BoardMoveExtension.IsInBoard).ToArray();
 
                 case PieceMoveStyleEnum.LShaped:
                     var knightMoves = new[]
@@ -78,7 +79,7 @@ namespace LagChessApplication.Extensions
                         new Point(piece.Position.X - 2, piece.Position.Y - 1)
                     };
 
-                    return knightMoves.Where(BoardExtension.IsInBoard).ToArray();
+                    return knightMoves.Where(BoardMoveExtension.IsInBoard).ToArray();
 
                 case PieceMoveStyleEnum.OneAll:
 
@@ -100,11 +101,11 @@ namespace LagChessApplication.Extensions
                         }
                     }
 
-                    return oneStepMoves.Where(BoardExtension.IsInBoard).ToArray();
+                    return oneStepMoves.Where(BoardMoveExtension.IsInBoard).ToArray();
 
                 case PieceMoveStyleEnum.All:
-                    var linearMoves = GetPossibleMoves(piece, PieceMoveStyleEnum.Straight);
-                    var diagonalMoves = GetPossibleMoves(piece, PieceMoveStyleEnum.Diagonal);
+                    var linearMoves = piece.GetPossibleMoves(PieceMoveStyleEnum.Straight);
+                    var diagonalMoves = piece.GetPossibleMoves(PieceMoveStyleEnum.Diagonal);
 
                     return linearMoves.Union(diagonalMoves).ToArray();
 
@@ -118,7 +119,7 @@ namespace LagChessApplication.Extensions
             if (!moveStyle.HasValue)
                 moveStyle = piece.MoveStyle;
 
-            var moves = GetPossibleMoves(piece, moveStyle.Value);
+            var moves = piece.GetPossibleMoves(moveStyle.Value);
 
             if (piece is Pawn)
             {

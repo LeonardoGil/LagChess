@@ -1,13 +1,15 @@
 ﻿using LagChessApplication.Domains;
 using LagChessApplication.Domains.Enums;
 using LagChessApplication.Domains.Pieces;
+using LagChessApplication.Extensions.Boards;
+using LagChessApplication.Interfaces;
 using System.Drawing;
 
-namespace LagChessApplication.Extensions
+namespace LagChessApplication.Extensions.Pieces
 {
-    public static class PawnExtension
+    internal static class PawnExtension
     {
-        public static void PromotePawn(this Pawn pawn, Board board, PieceTypeEnum type)
+        internal static void PromotePawn(this Pawn pawn, Board board, PieceTypeEnum type)
         {
             ArgumentNullException.ThrowIfNull(pawn);
 
@@ -19,7 +21,7 @@ namespace LagChessApplication.Extensions
             board.Pieces[pawnIndex] = pawn.ConvertTo(type);
         }
 
-        public static bool IsMovingInvalid(this Pawn pawn, Board board, Point to, Pawn? anPassantTarget = null)
+        internal static bool IsMovingInvalid(this Pawn pawn, Board board, Point to, Pawn? anPassantTarget = null)
         {
             var isSameColor = board.IsOccupied(to) && board.GetPiece(to).Color == pawn.Color;
 
@@ -30,6 +32,11 @@ namespace LagChessApplication.Extensions
             return isInvalidAttack || isInvalidMove;
         }
 
+        internal static bool ShouldPromotePawn(this IPiece piece) => piece.ShouldPromotePawn(piece.Position);
+
+        internal static bool ShouldPromotePawn(this IPiece piece, Point position) => piece is Pawn && IsAtPromotionRow(position, piece.Color);
+
+
         private static bool AnPassantMove(this Pawn pawnTargert, Point to)
         {
             var positionY = pawnTargert.Position.Y - to.Y;
@@ -39,11 +46,14 @@ namespace LagChessApplication.Extensions
             return pawnTargert.Color switch
             {
                 PieceColorEnum.White => moveValid && positionY > 0,
-                
+
                 PieceColorEnum.Black => moveValid && positionY < 0,
-                
+
                 _ => throw new NotSupportedException(),
             };
         }
+
+        private static bool IsAtPromotionRow(Point position, PieceColorEnum color) => color == PieceColorEnum.Black && position.Y == 1 ||
+                                                                                      color == PieceColorEnum.White && position.Y == 8;
     }
 }
