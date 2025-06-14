@@ -4,6 +4,7 @@ using LagChessApplication.Domains.Pieces;
 using LagChessApplication.Exceptions;
 using LagChessApplication.Extensions.Boards;
 using LagChessApplication.Extensions.Pieces;
+using LagChessApplication.Extensions.Rules;
 using LagChessApplication.Interfaces;
 using System.Drawing;
 
@@ -14,7 +15,7 @@ namespace LagChessApplication.Domains
         internal Board(IPiece[] pieces, Pawn? anPassantTarget = null, Func<PieceTypeEnum>? onPawnPromotion = null)
         {
             Pieces = pieces;
-            
+
             _anPassantTarget = anPassantTarget;
 
             if (onPawnPromotion is not null)
@@ -25,7 +26,7 @@ namespace LagChessApplication.Domains
         }
 
         public event Func<PieceTypeEnum>? OnPawnPromotion;
-            
+
         internal bool _capturedPiece;
         internal Pawn? _anPassantTarget;
         internal PieceTypeEnum? _pawnPromotion;
@@ -59,11 +60,35 @@ namespace LagChessApplication.Domains
             var piece = GetPiece(from);
 
             if (!this.IsValidMove(piece, to))
-                throw InvalidMoveException.Create(piece, to);
+            {
+                var isCastling = piece is King king && king.IsCastlingMoveValid(this, to);
+
+                if (!isCastling)
+                {
+                    throw InvalidMoveException.Create(piece, to);
+                }
+            }
+
+            if (piece.ShouldPromotePawn(to))
+            {
+                ArgumentNullException.ThrowIfNull(OnPawnPromotion);
+                _pawnPromotion = OnPawnPromotion.Invoke();
+            }
+
+            if (this.SimulatedMovePiecePutsOwnKingInCheck(from, to))
+            {
+                throw KingInCheckException.Create(piece, to);
+            }
 
             try
             {
-                return SetPiece(piece, from, to);
+                SetPiece(piece, to);
+
+                var opponentIsCheck = this.MovePutsOpponentKingInCheck(piece);
+
+                var opponentIsCheckmated = opponentIsCheck && this.MovePutsOpponentKingInCheckmate(piece);
+
+                return ChessMove.Create(from, to, piece.Type, opponentIsCheck, opponentIsCheckmated, _capturedPiece, _pawnPromotion);
             }
             catch (Exception)
             {
@@ -76,26 +101,16 @@ namespace LagChessApplication.Domains
             }
         }
 
-        private ChessMove SetPiece(IPiece piece, Point from, Point to)
+        internal void SetPiece(IPiece piece, Point to)
         {
-            if (piece.ShouldPromotePawn(to))
+            if (piece.IsCastlingMove(this, to))
             {
-                ArgumentNullException.ThrowIfNull(OnPawnPromotion);
-                _pawnPromotion = OnPawnPromotion.Invoke();
+                this.SetCastlingPositions(piece, to);
             }
-
-            if (this.SimulatedMovePiecePutsOwnKingInCheck(from, to))
+            else
             {
-                throw KingInCheckException.Create(piece, to);
+                this.SetPiecePosition(piece, to);
             }
-
-            this.SetPiecePosition(piece, to);
-
-            var opponentIsCheck = this.MovePutsOpponentKingInCheck(piece);
-
-            var opponentIsCheckmated = opponentIsCheck && this.MovePutsOpponentKingInCheckmate(piece);
-
-            return ChessMove.Create(from, to, piece.Type, opponentIsCheck, opponentIsCheckmated, _capturedPiece, _pawnPromotion);
         }
     }
 }
