@@ -50,11 +50,6 @@ namespace LagChessApplication.Extensions.Boards
             }
         }
 
-        internal static bool IsValidMove(this Board board, IPiece piece, Point to)
-        {
-            return piece.IsValidMove(to) && board.IsPathClear(piece, to) && board.CanPlacePiece(piece, to) && !(piece is Pawn pawn && pawn.IsMovingInvalid(board, to, board._anPassantTarget));
-        }
-
         internal static void SetPiecePosition(this Board board, IPiece piece, Point to)
         {
             var occupiedPiece = board.GetTryPiece(to);

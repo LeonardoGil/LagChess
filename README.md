@@ -1,4 +1,4 @@
-# LagChess
+# ♟️LagChess
 
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 ![Última versão](https://img.shields.io/github/v/tag/LeonardoGil/LagChess?color=blue)
@@ -15,14 +15,15 @@ O projeto está em constante desenvolvimento. Algumas funcionalidades essenciais
 
 ## 🎯 Funcionalidades
 
-- ✅ Inicialização de tabuleiro padrão
-- ✅ Movimentação legal das peças  
-- ✅ Detecção de xeque  
-- ✅ Promoção de peão  
-- ✅ Histórico de jogadas 
-- ✅ Xeque-mate
-- ✅ En passant 
-- ⬜ Roque (em desenvolvimento)  
+- ✅ Inicialização do tabuleiro padrão
+- ✅ Validação completa dos movimentos legais
+- ✅ Detecção de xeque e xeque-mate
+- ✅ Promoção de peão
+- ✅ En passant
+- ✅ Roque
+- ✅ Histórico das jogadas
+- ⬜ Afogamento
+- ⬜ Empate
 
 ## 📦 Tecnologias Utilizadas
 

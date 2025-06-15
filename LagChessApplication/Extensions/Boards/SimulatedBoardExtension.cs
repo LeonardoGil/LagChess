@@ -1,6 +1,4 @@
 ﻿using LagChessApplication.Domains;
-using LagChessApplication.Exceptions;
-using LagChessApplication.Interfaces;
 using System.Drawing;
 
 namespace LagChessApplication.Extensions.Boards
@@ -15,10 +13,9 @@ namespace LagChessApplication.Extensions.Boards
 
             var simulatedPiece = simulatedBoard.GetPiece(from);
 
-            if (!simulatedBoard.IsValidMove(simulatedPiece, to))
-                throw InvalidMoveException.CreateSimuleted(simulatedPiece, to);
+            simulatedBoard.ValidateMove(simulatedPiece, to);
 
-            simulatedBoard.SetPiecePosition(simulatedPiece, to);
+            simulatedBoard.SetPiece(simulatedPiece, to);
 
             return simulatedBoard;
         }

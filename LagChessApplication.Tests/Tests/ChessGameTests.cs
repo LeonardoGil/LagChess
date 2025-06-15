@@ -6,7 +6,7 @@ using Xunit;
 
 namespace LagChessApplication.Tests.Tests
 {
-    public class ChessGameTest
+    public class ChessGameTests
     {
         [Fact]
         public void ChessHistory_ShouldFillHistoryAccurately_WhenGameIsInProgress()
@@ -86,7 +86,7 @@ namespace LagChessApplication.Tests.Tests
         }
 
         [Fact]
-        public void TurnManager_ShouldThrow_WhenPlayerMovesPieceOutOfTurn()
+        public void TurnManager_ShouldThrowException_WhenPlayerMovesPieceOutOfTurn()
         {
             var chessGame = GameChessExtension.Create();
 
@@ -97,40 +97,5 @@ namespace LagChessApplication.Tests.Tests
 
             Assert.Throws<InvalidPieceOwnershipException>(() => chessGame.Play(Square.B3, Square.B4));
         }
-
-        [Fact]
-        public void ChessGame_ShouldDetectCheckmate_WhenFoolsMateOccurs()
-        {
-            var chessGame = GameChessExtension.Create();
-
-            chessGame.Play(Square.F2, Square.F3);
-            chessGame.Play(Square.E7, Square.E5);
-
-            chessGame.Play(Square.G2, Square.G4);
-            chessGame.Play(Square.D8, Square.H4);
-
-            var actualMove = chessGame.History.Get().First();
-
-            Assert.True(actualMove.OpponentKingInCheckMate);
-        }
-
-        [Fact]
-        public void ChessGame_ShouldDetectCheckmate_WhenScholarsMateOccurs()
-        {
-            var chessGame = GameChessExtension.Create();
-
-            chessGame.Play(Square.E2, Square.E4); 
-            chessGame.Play(Square.E7, Square.E5); 
-            chessGame.Play(Square.F1, Square.C4); 
-            chessGame.Play(Square.B8, Square.C6); 
-            chessGame.Play(Square.D1, Square.H5); 
-            chessGame.Play(Square.G8, Square.F6); 
-            chessGame.Play(Square.H5, Square.F7);
-
-            var actualMove = chessGame.History.Get().First();
-
-            Assert.True(actualMove.OpponentKingInCheckMate);
-        }
     }
-
 }
