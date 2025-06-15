@@ -59,15 +59,7 @@ namespace LagChessApplication.Domains
         {
             var piece = GetPiece(from);
 
-            if (!this.IsValidMove(piece, to))
-            {
-                var isCastling = piece is King king && king.IsCastlingMoveValid(this, to);
-
-                if (!isCastling)
-                {
-                    throw InvalidMoveException.Create(piece, to);
-                }
-            }
+            ValidateMove(piece, to);
 
             if (piece.ShouldPromotePawn(to))
             {
@@ -76,9 +68,7 @@ namespace LagChessApplication.Domains
             }
 
             if (this.SimulatedMovePiecePutsOwnKingInCheck(from, to))
-            {
                 throw KingInCheckException.Create(piece, to);
-            }
 
             try
             {
@@ -99,6 +89,30 @@ namespace LagChessApplication.Domains
                 _pawnPromotion = default;
                 _capturedPiece = default;
             }
+        }
+
+        internal void ValidateMove(IPiece piece, Point to)
+        {
+            if (!piece.IsValidMove(to))
+            {
+                var king = piece as King;
+
+                if (king is not null && king.IsCastlingMove(this, to))
+                {
+                    king.ValidateCastlingMove(this, to);
+                }
+                else
+                    throw InvalidMoveException.Create(piece, to);
+            }
+
+            if (!this.IsPathClear(piece, to))
+                throw InvalidMoveException.Create(piece, to);
+
+            if (!this.CanPlacePiece(piece, to))
+                throw InvalidMoveException.Create(piece, to);
+
+            if (piece is Pawn pawn && pawn.IsMovingInvalid(this, to, _anPassantTarget))
+                throw InvalidMoveException.Create(piece, to);
         }
 
         internal void SetPiece(IPiece piece, Point to)

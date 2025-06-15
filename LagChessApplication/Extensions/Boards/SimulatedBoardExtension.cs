@@ -1,7 +1,4 @@
 ﻿using LagChessApplication.Domains;
-using LagChessApplication.Domains.Pieces;
-using LagChessApplication.Exceptions;
-using LagChessApplication.Extensions.Rules;
 using System.Drawing;
 
 namespace LagChessApplication.Extensions.Boards
@@ -16,15 +13,7 @@ namespace LagChessApplication.Extensions.Boards
 
             var simulatedPiece = simulatedBoard.GetPiece(from);
 
-            if (!simulatedBoard.IsValidMove(simulatedPiece, to))
-            {
-                var isCastling = simulatedPiece is King king && king.IsCastlingMove(board, to);
-
-                if (!isCastling)
-                {
-                    throw InvalidMoveException.CreateSimuleted(simulatedPiece, to);
-                }
-            }
+            simulatedBoard.ValidateMove(simulatedPiece, to);
 
             simulatedBoard.SetPiece(simulatedPiece, to);
 

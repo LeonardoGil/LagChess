@@ -35,15 +35,24 @@ namespace LagChessApplication.Extensions.Rules
                 && GetTryCastlingRook(board, king, to) is not null;
         }
 
-        internal static bool IsCastlingMoveValid(this King king, Board board, Point to)
+        internal static void ValidateCastlingMove(this King king, Board board, Point to)
         {
-            if (IsCastlingMove(king, board, to) && !king.StartPosition || board.MovePutsOwnKingInCheck(king) || !board.IsPathClear(king, to))
-                return false;
+            if (!IsCastlingMove(king, board, to))
+                return;
+
+            if (!king.StartPosition)
+                throw InvalidCastlingException.KingHasMoved(king, to);
+                    
+            if (board.MovePutsOwnKingInCheck(king))
+                throw InvalidCastlingException.KingIsInCheck(king, to);
+
+            if (!board.IsPathClear(king, to))
+                throw InvalidCastlingException.PathIsNotClear(king, to);
 
             var rook = board.GetTryCastlingRook(king, to);
 
             if (rook is null || !rook.StartPosition)
-                return false;
+                throw InvalidCastlingException.RookHasMoved(king, to);
 
             var simulatedBoard = board.Clone();
 
@@ -62,11 +71,9 @@ namespace LagChessApplication.Extensions.Rules
                 var simulatedPiece = simulatedBoard.GetPiece(toSimulated);
 
                 if (simulatedBoard.MovePutsOwnKingInCheck(simulatedPiece))
-                    return false;
+                    throw InvalidCastlingException.KingPassesThroughCheck(king, to);
             }
             while (toX != to.X);
-
-            return true;
         }
 
         private static bool IsKingSideCastling(this King king, Point to) => to.X > king.Position.X;
