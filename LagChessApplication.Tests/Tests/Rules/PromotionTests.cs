@@ -12,8 +12,6 @@ namespace LagChessApplication.Tests.Tests.Rules
         {
             var chessGame = GameChessExtension.Create();
 
-            chessGame.Board.OnPawnPromotion += () => PieceTypeEnum.Queen;
-
             chessGame.Play(Square.B2, Square.B3);
             chessGame.Play(Square.A7, Square.A6);
 

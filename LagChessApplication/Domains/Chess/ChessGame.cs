@@ -7,7 +7,7 @@ namespace LagChessApplication.Domains.Chess
 {
     public class ChessGame
     {
-        public ChessGame(Player white, Player black)
+        public ChessGame(Player white, Player black, Func<PieceTypeEnum>? onPawnPromotion = null)
         {
             ArgumentNullException.ThrowIfNull(white);
             ArgumentNullException.ThrowIfNull(black);
@@ -17,7 +17,9 @@ namespace LagChessApplication.Domains.Chess
 
             IPiece[] pieces = [.. White.Pieces, .. Black.Pieces];
 
-            Board = new(pieces);
+            onPawnPromotion ??= () => PieceTypeEnum.Queen;
+
+            Board = new(pieces, onPawnPromotion);
             History = new();
         }
 

@@ -12,48 +12,42 @@ namespace LagChessApplication.Domains
 {
     public class Board : IDeepCloneable<Board>
     {
-        internal Board(IPiece[] pieces, ChessMove lastMove = default, Func<PieceTypeEnum>? onPawnPromotion = null)
+        internal Board(IPiece[] pieces, Func<PieceTypeEnum> onPawnPromotion, ChessMove lastMove = default)
         {
             Pieces = pieces;
 
             _lastMove = lastMove;
 
-            if (onPawnPromotion is not null)
-            {
-                OnPawnPromotion += onPawnPromotion;
-                _pawnPromotion = OnPawnPromotion.Invoke();
-            }
+            OnPawnPromotion += onPawnPromotion;
         }
 
-        public event Func<PieceTypeEnum>? OnPawnPromotion;
+        internal event Func<PieceTypeEnum> OnPawnPromotion;
 
-        internal bool _capturedPiece;
-        internal ChessMove _lastMove;
-        internal PieceTypeEnum? _pawnPromotion;
-
-        public IPiece[] Pieces { get; }
-
-        public IPiece[] AvailablePieces { get => Pieces.Where(x => !x.IsDead).ToArray(); }
+        private bool _capturedPiece;
+        private ChessMove _lastMove;
+        private PieceTypeEnum? _pawnPromotion;
 
         public Board Clone()
         {
             var pieces = AvailablePieces.Select(x => x.Clone()).ToArray();
 
-            var onPawnPromotion = default(Func<PieceTypeEnum>?);
-
-            if (_pawnPromotion.HasValue)
+            PieceTypeEnum onPawnPromotion()
             {
-                onPawnPromotion = () => { return _pawnPromotion.Value; };
+                return TryGetPromotionValue(out var promotionValue) ? promotionValue : default;
             }
 
-            return new Board(pieces, _lastMove, onPawnPromotion);
+            return new Board(pieces, onPawnPromotion, _lastMove);
         }
+
+        internal IPiece[] Pieces { get; }
+
+        internal IPiece[] AvailablePieces { get => Pieces.Where(x => !x.IsDead).ToArray(); }
 
         public IPiece GetPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from) ?? throw PieceNotFoundException.Create(from);
 
         public IPiece? GetTryPiece(Point from) => AvailablePieces.FirstOrDefault(x => x.Position == from);
 
-        public ChessMove MovePiece(Point from, Point to)
+        internal ChessMove MovePiece(Point from, Point to)
         {
             var piece = GetPiece(from);
 
@@ -61,7 +55,6 @@ namespace LagChessApplication.Domains
 
             if (piece.ShouldPromotePawn(to))
             {
-                ArgumentNullException.ThrowIfNull(OnPawnPromotion);
                 _pawnPromotion = OnPawnPromotion.Invoke();
             }
 
@@ -87,6 +80,13 @@ namespace LagChessApplication.Domains
                 _pawnPromotion = default;
                 _capturedPiece = default;
             }
+        }
+
+        internal bool TryGetPromotionValue(out PieceTypeEnum promotionValue)
+        {
+            promotionValue = _pawnPromotion.GetValueOrDefault();
+
+            return _pawnPromotion.HasValue;
         }
 
         internal void ValidateMove(IPiece piece, Point to)

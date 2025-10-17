@@ -3,6 +3,7 @@ using LagChessApplication.Domains.Chess;
 using LagChessApplication.Domains.Enums;
 using LagChessApplication.Domains.Pieces;
 using LagChessApplication.Extensions.Pieces;
+using LagChessApplication.Extensions.Rules;
 using LagChessApplication.Interfaces;
 using System.Drawing;
 
@@ -64,9 +65,9 @@ namespace LagChessApplication.Extensions.Boards
 
             pawn.Move(to);
 
-            if (pawn.ShouldPromotePawn() && board._pawnPromotion.HasValue)
+            if (pawn.ShouldPromotePawn() && board.TryGetPromotionValue(out var promotionValue))
             {
-                pawn.PromotePawn(board, board._pawnPromotion.Value);
+                pawn.PromotePawn(board, promotionValue);
             }
         }
 
