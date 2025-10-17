@@ -6,15 +6,14 @@ using System.Drawing;
 
 namespace LagChessApplication.Extensions.Pieces
 {
-    public static class PieceExtension
+    internal static class PieceExtension
     {
-        public static IPiece? CreatePiece(Type type, Point position, PieceColorEnum color) => Activator.CreateInstance(type, position, color) as IPiece;
-        public static T CreatePieceWhite<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.White) as T ?? throw new Exception($"Failed to cast piece of type '{typeof(T).Name}'.");
-        public static T CreatePieceBlack<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.Black) as T ?? throw new Exception($"Failed to cast piece of type '{typeof(T).Name}'.");
+        internal static IPiece? CreatePiece(Type type, Point position, PieceColorEnum color) => Activator.CreateInstance(type, position, color) as IPiece;
+        internal static T CreatePieceWhite<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.White) as T ?? throw new Exception($"Failed to cast piece of type '{typeof(T).Name}'.");
+        internal static T CreatePieceBlack<T>(int x, int y) where T : class, IPiece => CreatePiece(typeof(T), new Point(x, y), PieceColorEnum.Black) as T ?? throw new Exception($"Failed to cast piece of type '{typeof(T).Name}'.");
 
-
-        public static Point[] GetPossibleMoves(this IPiece piece) => piece.GetPossibleMoves(piece.MoveStyle);
-        public static Point[] GetPossibleMoves(this IPiece piece, PieceMoveStyleEnum moveStyle)
+        internal static Point[] GetPossibleMoves(this IPiece piece) => piece.GetPossibleMoves(piece.MoveStyle);
+        internal static Point[] GetPossibleMoves(this IPiece piece, PieceMoveStyleEnum moveStyle)
         {
             switch (moveStyle)
             {
@@ -114,7 +113,7 @@ namespace LagChessApplication.Extensions.Pieces
             }
         }
 
-        public static Point[] GetPossibleMovesAndAttacks(this IPiece piece, PieceMoveStyleEnum? moveStyle = null)
+        internal static Point[] GetPossibleMovesAndAttacks(this IPiece piece, PieceMoveStyleEnum? moveStyle = null)
         {
             if (!moveStyle.HasValue)
                 moveStyle = piece.MoveStyle;
@@ -137,7 +136,7 @@ namespace LagChessApplication.Extensions.Pieces
             return moves;
         }
 
-        public static Type GetType(PieceTypeEnum type)
+        internal static Type GetType(PieceTypeEnum type)
         {
             return type switch
             {
@@ -150,6 +149,11 @@ namespace LagChessApplication.Extensions.Pieces
 
                 _ => throw new ArgumentOutOfRangeException(nameof(type), $"Unexpected piece type: {type}")
             };
+        }
+
+        internal static bool IsSameColor(this IPiece piece, IPiece target)
+        {
+            return piece.Color == target.Color;
         }
     }
 }
