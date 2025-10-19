@@ -1,7 +1,9 @@
 ﻿using LagChessApplication.Domains;
+using LagChessApplication.Domains.Chess;
 using LagChessApplication.Domains.Enums;
 using LagChessApplication.Domains.Pieces;
 using LagChessApplication.Extensions.Pieces;
+using LagChessApplication.Extensions.Rules;
 using LagChessApplication.Interfaces;
 using System.Drawing;
 
@@ -50,30 +52,36 @@ namespace LagChessApplication.Extensions.Boards
             }
         }
 
-        internal static void SetPiecePosition(this Board board, IPiece piece, Point to)
+        internal static void SetPiecePosition(this Board board, Pawn pawn, Point to, ChessMove lastMove)
         {
-            var occupiedPiece = board.GetTryPiece(to);
+            var captured = board.GetTryPiece(to);
 
-            if (occupiedPiece is not null)
+            if (captured is null && pawn.IsAttack(to) && lastMove.IsDoublePawnAdvance() && to.X == lastMove.To.Point.X)
             {
-                occupiedPiece.Kill();
-                board._capturedPiece = true;
+                captured = board.GetPiece(new Point(to.X, lastMove.To.Point.Y));
             }
 
-            var pawn = piece as Pawn;
+            board.TryCapturePieceAt(captured);
 
-            board._anPassantTarget = pawn is not null && pawn.IsDoubleStepMove(to) ? pawn : default;
+            pawn.Move(to);
 
-            piece.Move(to);
-
-            if (pawn is not null && piece.ShouldPromotePawn() && board._pawnPromotion.HasValue)
+            if (pawn.ShouldPromotePawn() && board.TryGetPromotionValue(out var promotionValue))
             {
-                pawn.PromotePawn(board, board._pawnPromotion.Value);
+                pawn.PromotePawn(board, promotionValue);
             }
         }
 
+        internal static void SetPiecePosition(this Board board, IPiece piece, Point to)
+        {
+            var captured = board.GetTryPiece(to);
+
+            board.TryCapturePieceAt(captured);
+
+            piece.Move(to);
+        }
+
         internal static bool IsInBoard(Point position) => IsInBoard(position.X, position.Y);
-        
+
         internal static bool IsInBoard(int x, int y) => x is >= 1 and <= 8 && y is >= 1 and <= 8;
     }
 }
