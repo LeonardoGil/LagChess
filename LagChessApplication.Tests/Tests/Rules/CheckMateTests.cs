@@ -9,7 +9,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void ChessGame_ShouldDetectCheckmate_WhenFoolsMateOccurs()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.F2, Square.F3);
             chessGame.Play(Square.E7, Square.E5);
@@ -25,7 +25,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void ChessGame_ShouldDetectCheckmate_WhenScholarsMateOccurs()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.E2, Square.E4);
             chessGame.Play(Square.E7, Square.E5);

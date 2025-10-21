@@ -23,7 +23,9 @@ namespace LagChessApplication.Extensions.Pieces
 
                     if (piece is Pawn)
                     {
-                        directions = [new(0, 1)];
+                        directions = [
+                            new(0, piece.Color == PieceColorEnum.White ? 1 : -1)
+                        ];
                     }
                     else
                     {

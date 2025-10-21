@@ -10,7 +10,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void Pawn_ShouldBePromoted_WhenCapturingOnLastRank()
         {
-            var chessGame = GameChessExtension.Create(onPawnPromotion: () => PieceTypeEnum.Queen);
+            var chessGame = ChessGameExtension.Create(onPawnPromotion: () => PieceTypeEnum.Queen);
 
             chessGame.Play(Square.A2, Square.A4);
             chessGame.Play(Square.H7, Square.H6);

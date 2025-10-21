@@ -3,7 +3,7 @@ using LagChessApplication.Domains.Enums;
 
 namespace LagChessApplication.Extensions
 {
-    public static class GameChessExtension
+    public static class ChessGameExtension
     {
         public static ChessGame Create(string player1 = "white", string player2 = "black", Func<PieceTypeEnum>? onPawnPromotion = null)
         {
