@@ -2,7 +2,7 @@
   <PropertyGroup>
 
 	<PackageId>LagChess</PackageId>
-	<Version>1.2.0-alpha</Version>
+	<Version>1.3.0-alpha</Version>
 	<Authors>Leonardo Albuquerque Gil</Authors>
 	<Company>Lag</Company>
 	<Description>.NET library implementing the core logic of a chess game.</Description>
