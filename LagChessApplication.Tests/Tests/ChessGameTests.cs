@@ -11,7 +11,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void ChessHistory_ShouldFillHistoryAccurately_WhenGameIsInProgress()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.B2, Square.B4);
 
@@ -55,7 +55,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void TurnManager_ShouldCalculateTurnNumberAndPlayerTurn_WhenGameIsInProgress()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             // Turn 1
             chessGame.Play(Square.E2, Square.E3);
@@ -86,7 +86,7 @@ namespace LagChessApplication.Tests.Tests
         [Fact]
         public void TurnManager_ShouldThrowException_WhenPlayerMovesPieceOutOfTurn()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.E2, Square.E4);
             chessGame.Play(Square.E7, Square.E5);

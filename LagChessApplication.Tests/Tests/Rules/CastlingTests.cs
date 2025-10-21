@@ -12,7 +12,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void Move_ShouldCastleKingSide_Correctly()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.E2, Square.E3);
             chessGame.Play(Square.E7, Square.E6);
@@ -32,7 +32,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void Move_ShouldCastleQueenSide_Correctly()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.D2, Square.D4);
             chessGame.Play(Square.A7, Square.A6);
@@ -55,7 +55,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void Move_CannotCastleKingSide_IfKingHasMoved()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.E2, Square.E3);
             chessGame.Play(Square.E7, Square.E6);
@@ -78,7 +78,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void Move_CannotCastleQueenSide_IfRookHasMoved()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.A2, Square.A4);
             chessGame.Play(Square.A7, Square.A6);
@@ -107,7 +107,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void Move_CannotCastle_IfPieceIsBetweenKingAndRook()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             Assert.Throws<InvalidCastlingException>(() => chessGame.Play(Square.E1, Square.G1));
             Assert.Throws<InvalidCastlingException>(() => chessGame.Play(Square.E1, Square.C1));
@@ -116,7 +116,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void Move_CannotCastle_WhenInCheck()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.G1, Square.H3);
             chessGame.Play(Square.D7, Square.D6);
@@ -139,7 +139,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void Move_CannotCastle_ThroughCheck()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.G1, Square.H3);
             chessGame.Play(Square.D7, Square.D6);

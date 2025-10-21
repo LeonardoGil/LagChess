@@ -11,7 +11,7 @@ namespace LagChessApplication.Tests.Tests.Moves
         [Fact]
         public void Pawn_ShouldThrowException_WhenMovingDiagonallyWithoutCapture()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.B2, Square.B3);
             chessGame.Play(Square.A7, Square.A6);
@@ -22,7 +22,7 @@ namespace LagChessApplication.Tests.Tests.Moves
         [Fact]
         public void Pawn_ShouldThrowException_WhenTryingToCaptureForward()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.A2, Square.A4);
             chessGame.Play(Square.A7, Square.A5);
@@ -33,7 +33,7 @@ namespace LagChessApplication.Tests.Tests.Moves
         [Fact]
         public void Pawn_ShouldThrowException_WhenMovingLikeKnightOnFirstMove()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             Assert.Throws<InvalidMoveException>(() => chessGame.Play(Square.A2, Square.B4));
         }
@@ -41,7 +41,7 @@ namespace LagChessApplication.Tests.Tests.Moves
         [Fact]
         public void Pawn_ShouldAllowDiagonalMove_WhenCapturing()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.B2, Square.B3);
             chessGame.Play(Square.A7, Square.A6);

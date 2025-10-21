@@ -10,7 +10,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void Pawn_ShouldAllowEnPassant_WhenConditionsAreMet()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.E2, Square.E4);
             chessGame.Play(Square.A7, Square.A6);
@@ -24,7 +24,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void Pawn_ShouldNotAllowDiagonalMove_WhenNotEnPassant()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.E2, Square.E4);
             chessGame.Play(Square.A7, Square.A6);
@@ -38,7 +38,7 @@ namespace LagChessApplication.Tests.Tests.Rules
         [Fact]
         public void Pawn_ShouldNotAllowEnPassant_AfterTurnExpires()
         {
-            var chessGame = GameChessExtension.Create();
+            var chessGame = ChessGameExtension.Create();
 
             chessGame.Play(Square.E2, Square.E4);
             chessGame.Play(Square.A7, Square.A6);
