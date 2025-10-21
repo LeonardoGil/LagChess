@@ -69,11 +69,6 @@ namespace LagChessApplication.Domains
 
                 var opponentIsCheckmated = opponentIsCheck && this.MovePutsOpponentKingInCheckmate(piece);
 
-                if (!opponentIsCheck && !opponentIsCheckmated && this.IsStalemate(piece))
-                {
-                    throw new NotImplementedException();
-                }
-
                 return _lastMove = ChessMove.Create(from, to, piece.Type, opponentIsCheck, opponentIsCheckmated, _capturedPiece, _pawnPromotion);
             }
             catch (Exception)

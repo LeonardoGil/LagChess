@@ -8,10 +8,8 @@ namespace LagChessApplication.Extensions.Rules
 {
     internal static class StalemateExtension
     {
-        internal static bool IsStalemate(this Board board, IPiece piece)
+        internal static bool IsStalemate(this Board board, PieceColorEnum opponentColor)
         {
-            var opponentColor = piece.Color == PieceColorEnum.White ? PieceColorEnum.Black : PieceColorEnum.White;
-
             var opponentPieces = board.AvailablePieces.Where(x => x.Color == opponentColor);
 
             foreach (var opponentPiece in opponentPieces)
