@@ -17,7 +17,7 @@
 - ✅ En passant
 - ✅ Roque
 - ✅ Histórico das jogadas
-- ⬜ Afogamento
+- ✅ Afogamento
 - ⬜ Empate
 
 ## 📦 Tecnologias Utilizadas
